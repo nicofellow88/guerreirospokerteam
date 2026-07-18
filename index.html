@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Guerreiros Poker Team — Dashboard</title>
+<title>Guerreiros Poker Team — Leak Finder</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
@@ -11,6 +11,7 @@
   --border:#26313f; --text:#e8eef5; --muted:#8a97a6; --muted2:#5f6d7d;
   --blue:#4f9dff; --blue-deep:#2b6fd6; --blue-dim:#16304d; --blue-soft:#1d2b3d;
   --red:#f0616d; --red-bg:#2a1418; --green:#43c98a; --green-bg:#10281d;
+  --gold:#f0b429; --gold-deep:#b8860b;
   --shadow:0 10px 30px rgba(0,0,0,.35);
 }
 *{box-sizing:border-box}
@@ -20,22 +21,27 @@ a{color:inherit}
 .app{display:flex;min-height:100vh}
 
 /* Sidebar */
-.sidebar{width:236px;flex:0 0 236px;background:linear-gradient(180deg,#131a24,#0e1217);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto;padding:0 0 24px}
-.brand{padding:20px 20px 16px;border-bottom:1px solid var(--border)}
-.brand .logo{display:flex;align-items:center;gap:10px}
-.brand .chip{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--blue-deep));display:flex;align-items:center;justify-content:center;font-weight:800;color:#04101f;box-shadow:0 4px 14px rgba(79,157,255,.35)}
-.brand h1{font-size:15px;margin:0;letter-spacing:.3px}
-.brand .sub{color:var(--muted);font-size:11px;margin-top:2px}
+.sidebar{width:248px;flex:0 0 248px;background:linear-gradient(180deg,#131a24,#0e1217);border-right:1px solid var(--border);position:sticky;top:0;height:100vh;overflow-y:auto;padding:0 0 24px}
+.brand{padding:22px 18px 18px;border-bottom:1px solid var(--border);text-align:center}
+.brand .logo{display:flex;flex-direction:column;align-items:center;gap:10px}
+.brand .badge-logo{width:84px;height:84px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(240,180,41,.18)}
+.brand .badge-logo img,.brand .badge-logo svg{width:84px;height:84px;object-fit:contain;display:block}
+.brand h1{font-size:15.5px;margin:0;letter-spacing:.3px;line-height:1.25}
+.brand .sub{color:var(--gold);font-size:11px;margin-top:3px;letter-spacing:.5px;text-transform:uppercase;font-weight:600}
 .navlabel{color:var(--muted2);font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;padding:16px 20px 6px}
-.navitem{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 20px;cursor:pointer;color:var(--muted);border-left:2px solid transparent;font-size:13px;transition:.12s}
+.navitem{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 18px 9px 20px;cursor:pointer;color:var(--muted);border-left:2px solid transparent;font-size:13px;transition:.12s}
 .navitem:hover{background:var(--panel);color:var(--text)}
 .navitem.active{background:linear-gradient(90deg,var(--blue-dim),transparent);color:#fff;border-left-color:var(--blue);font-weight:600}
-.navitem .badge{font-size:10px;color:var(--muted2)}
-.navitem .badge b{color:var(--red)} .navitem .badge i{color:var(--green);font-style:normal}
+.navitem .nm{display:flex;align-items:center;gap:8px;min-width:0}
+.navitem .num{color:var(--muted2);font-size:11px;width:15px;text-align:right;flex:0 0 auto}
+.navitem.active .num{color:var(--blue)}
+.navitem .badge{font-size:10.5px;color:var(--muted2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.badge .r{color:var(--red);font-weight:700} .badge .g{color:var(--green);font-weight:700} .badge .t{color:var(--muted2)}
+.navitem .ok{color:var(--blue);font-weight:700;font-size:11px}
 
 /* Main */
 .main{flex:1;min-width:0;display:flex;flex-direction:column}
-.topbar{display:flex;align-items:center;gap:16px;padding:16px 26px;border-bottom:1px solid var(--border);background:rgba(14,18,23,.7);backdrop-filter:blur(6px);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+.topbar{display:flex;align-items:center;gap:16px;padding:14px 26px;border-bottom:1px solid var(--border);background:rgba(14,18,23,.7);backdrop-filter:blur(6px);position:sticky;top:0;z-index:5;flex-wrap:wrap}
 .topbar h2{margin:0;font-size:18px;font-weight:700}
 .topbar .spacer{flex:1}
 .players{display:flex;gap:6px;flex-wrap:wrap}
@@ -43,59 +49,102 @@ a{color:inherit}
 .pchip:hover{color:var(--text);border-color:var(--blue-deep)}
 .pchip.active{background:var(--blue);border-color:var(--blue);color:#04101f}
 .pchip.all.active{background:linear-gradient(135deg,var(--blue),var(--blue-deep))}
+.pchip.bench{border-color:var(--gold-deep);color:var(--gold)}
+.pchip.bench.active{background:linear-gradient(135deg,var(--gold),var(--gold-deep));border-color:var(--gold);color:#231602}
 .btn{padding:7px 13px;border-radius:8px;background:var(--panel2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:12.5px;font-weight:600}
 .btn:hover{border-color:var(--blue-deep)}
 .updated{color:var(--muted2);font-size:11px}
-.content{padding:24px 26px 60px;max-width:1400px}
+.content{padding:24px 26px 70px;max-width:1500px}
 
 /* legend */
-.legend{display:flex;gap:18px;align-items:center;color:var(--muted);font-size:12px;margin:2px 0 20px}
+.legend{display:flex;gap:18px;align-items:center;color:var(--muted);font-size:12px;margin:2px 0 20px;flex-wrap:wrap}
 .legend span{display:inline-flex;align-items:center;gap:7px}
 .dot{width:10px;height:10px;border-radius:3px;display:inline-block}
 .dot.n{background:#c9d4e0} .dot.r{background:var(--red)} .dot.g{background:var(--green)}
 
 /* section header */
-.secttitle{font-size:22px;font-weight:700;margin:0 0 3px}
-.sectsub{color:var(--muted);font-size:13px;margin-bottom:18px}
-.pill-counts{display:inline-flex;gap:14px;margin-left:12px;font-size:13px;vertical-align:middle}
-.pill-counts b{color:var(--red)} .pill-counts i{color:var(--green);font-style:normal}
+.secthead{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin:0 0 4px}
+.secttitle{font-size:26px;font-weight:800;margin:0}
+.secttitle .pname{color:var(--blue)}
+.counts{display:inline-flex;gap:14px;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.counts .r{color:var(--red)} .counts .g{color:var(--green)} .counts .t{color:var(--muted2);font-weight:600}
+.sectsub{color:var(--muted);font-size:13px;margin:2px 0 16px}
+.arrow{font-size:.82em;vertical-align:middle}
 
-/* group card */
-.group{background:var(--panel);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden;box-shadow:var(--shadow)}
-.group>h3{margin:0;padding:12px 16px;font-size:13px;font-weight:700;color:var(--blue);background:var(--panel2);border-bottom:1px solid var(--border);letter-spacing:.2px}
-table{width:100%;border-collapse:collapse}
-th,td{padding:8px 12px;text-align:right;font-variant-numeric:tabular-nums;border-bottom:1px solid #1e2833;white-space:nowrap}
-th{color:var(--muted2);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0}
-td.stat,th.stat{text-align:left;color:var(--text)}
-tbody tr:hover{background:var(--panel2)}
-td.ref{color:var(--muted2);font-size:12px}
-.val{font-weight:700}
-.val.normal{color:#eaf1f8} .val.na{color:var(--muted2);font-weight:400}
-.val.red{color:var(--red)} .val.green{color:var(--green)}
-.tag{font-size:10px;padding:1px 6px;border-radius:5px;margin-left:6px;font-weight:700;vertical-align:middle}
-.tag.red{background:var(--red-bg);color:var(--red)} .tag.green{background:var(--green-bg);color:var(--green)}
-.faixa{color:var(--muted);font-size:12px}
+/* tables (hand2note style) */
+.tbl-wrap{overflow-x:auto;margin-bottom:20px}
+.tblcard{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 16px 16px;margin-bottom:18px;box-shadow:var(--shadow);display:inline-block;min-width:min(100%,340px);vertical-align:top}
+.tblcard h3{margin:0 0 12px;font-size:12.5px;font-weight:700;color:var(--blue);letter-spacing:.3px;text-transform:uppercase}
+.tblgrid{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+table.mtx,table.strip,table.linetbl{border-collapse:separate;border-spacing:4px;font-variant-numeric:tabular-nums}
+.mtx th,.strip th{color:var(--muted2);font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;padding:4px 8px;text-align:center;white-space:nowrap}
+.mtx td.corner{background:transparent}
+.mtx td.rowh{color:var(--text);font-weight:700;font-size:11.5px;text-align:left;padding:6px 10px 6px 6px;white-space:nowrap}
+.mc{min-width:52px;text-align:center;padding:7px 10px;border-radius:8px;background:var(--panel2);font-weight:700;font-size:13px;transition:.1s}
+.mc.empty{background:transparent}
+.mc.na{color:var(--muted2);font-weight:400;background:var(--panel2)}
+.mc.neutral{color:#eaf1f8}
+.mc.normal{color:#eaf1f8}
+.mc.red{color:var(--red);background:var(--red-bg)}
+.mc.green{color:var(--green);background:var(--green-bg)}
+.mc[data-tip]{cursor:help}
+.mc[data-tip]:hover{outline:1px solid var(--blue);outline-offset:-1px}
+.strip .mc{min-width:60px}
+.linetbl td.ln{color:var(--text);font-size:11.5px;text-align:left;padding:5px 10px 5px 4px;white-space:nowrap;font-weight:600}
+.linetbl .mc{min-width:64px}
+.streets{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.street{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 14px 14px;box-shadow:var(--shadow);min-width:220px}
+.street h4{margin:0 0 8px;font-size:12px;font-weight:800;color:var(--gold);letter-spacing:.5px}
 
-/* overview */
-.ovwrap{overflow-x:auto}
-.heat{border-collapse:separate;border-spacing:6px;min-width:900px}
-.heat th{font-size:11px;color:var(--muted);text-align:center;padding:4px 6px}
-.heat td.pl{text-align:left;font-weight:700;color:var(--text);padding-right:12px}
-.cell{min-width:78px;border-radius:9px;background:var(--panel2);border:1px solid var(--border);padding:9px 8px;text-align:center;cursor:pointer;transition:.12s}
-.cell:hover{border-color:var(--blue);transform:translateY(-1px)}
-.cell .n{font-size:16px;font-weight:800}
-.cell .mini{font-size:10.5px;color:var(--muted2);margin-top:2px}
-.cell b{color:var(--red)} .cell i{color:var(--green);font-style:normal}
-.cell.clean{opacity:.6}
-.ovnote{color:var(--muted);font-size:12.5px;margin:16px 0 6px}
+/* tooltip */
+#tip{position:fixed;z-index:50;background:#0b1017;border:1px solid var(--blue-deep);border-radius:8px;padding:8px 11px;font-size:12px;color:var(--text);box-shadow:0 8px 24px rgba(0,0,0,.5);pointer-events:none;opacity:0;transition:opacity .1s;max-width:240px}
+#tip .tt{color:var(--muted2);font-size:10.5px;text-transform:uppercase;letter-spacing:.3px}
+#tip b{color:var(--blue)} #tip .rr{color:var(--red)} #tip .gg{color:var(--green)}
+
+/* overview: player profile */
+.pfhead{font-size:13px;color:var(--muted);margin:0 0 12px}
+.pfgroup{margin-bottom:8px}
+.pfgroup .glbl{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--gold);font-weight:700;margin:14px 0 8px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.tile{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:13px 15px;position:relative}
+.tile .tv{font-size:24px;font-weight:800;line-height:1}
+.tile .tv.red{color:var(--red)} .tile .tv.green{color:var(--green)} .tile .tv.neutral,.tile .tv.normal{color:#eaf1f8}
+.tile .tk{font-size:12.5px;font-weight:700;margin-top:7px;color:var(--text)}
+.tile .td{font-size:10.5px;color:var(--muted);margin-top:2px;line-height:1.25}
+.tile .frng{font-size:10px;color:var(--muted2);margin-top:5px;font-variant-numeric:tabular-nums}
+
+/* overview: section menu cards */
+.smtitle{font-size:13px;color:var(--muted);margin:22px 0 10px;font-weight:600}
+.secmenu{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.seccard{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:13px 14px;cursor:pointer;transition:.12s;position:relative}
+.seccard:hover{border-color:var(--blue);transform:translateY(-1px)}
+.seccard .sn{font-size:10.5px;color:var(--muted2);font-weight:700}
+.seccard .st{font-size:14px;font-weight:700;margin:3px 0 9px}
+.seccard .sc{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;display:flex;gap:12px;align-items:center}
+.seccard .sc .r{color:var(--red)} .seccard .sc .g{color:var(--green)}
+.seccard .sc .ok{color:var(--blue)}
+
+/* overview heatmap (Todos) */
 .kpis{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:22px}
 .kpi{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 18px;min-width:150px}
 .kpi .k{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.4px}
 .kpi .v{font-size:26px;font-weight:800;margin-top:4px}
 .kpi .v.blue{color:var(--blue)} .kpi .v.red{color:var(--red)} .kpi .v.green{color:var(--green)}
-
-.hint{color:var(--muted2);font-size:12px}
+.ovwrap{overflow-x:auto}
+.heat{border-collapse:separate;border-spacing:6px;min-width:900px}
+.heat th{font-size:11px;color:var(--muted);text-align:center;padding:4px 6px}
+.heat td.pl{text-align:left;font-weight:700;color:var(--text);padding-right:12px;cursor:pointer}
+.heat td.pl:hover{color:var(--blue)}
+.cell{min-width:76px;border-radius:9px;background:var(--panel2);border:1px solid var(--border);padding:8px 8px;text-align:center;cursor:pointer;transition:.12s;line-height:1.25}
+.cell:hover{border-color:var(--blue);transform:translateY(-1px)}
+.cell .rr{color:var(--red);font-weight:800;font-size:14px} .cell .rr .arrow{color:var(--red)}
+.cell .gg{color:var(--green);font-weight:800;font-size:14px} .cell .gg .arrow{color:var(--green)}
+.cell.clean{display:flex;align-items:center;justify-content:center}
+.cell .okbig{color:var(--blue);font-weight:800;font-size:17px;letter-spacing:.5px}
+.ovnote{color:var(--muted);font-size:12.5px;margin:16px 0 6px}
+.hint{color:var(--muted2);font-size:12.5px;margin:10px 0}
 .loader{padding:60px;text-align:center;color:var(--muted)}
+@media(max-width:960px){.tiles,.secmenu{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:820px){.sidebar{display:none}.content{padding:16px}}
 </style>
 </head>
@@ -103,7 +152,13 @@ td.ref{color:var(--muted2);font-size:12px}
 <div class="app">
   <aside class="sidebar">
     <div class="brand">
-      <div class="logo"><div class="chip">G</div><div><h1>Guerreiros</h1><div class="sub">Poker Team · Mentoria</div></div></div>
+      <div class="logo">
+        <div class="badge-logo" id="logoBox"></div>
+        <div>
+          <h1>Guerreiros Poker Team</h1>
+          <div class="sub">Mentoria · Leak Finder</div>
+        </div>
+      </div>
     </div>
     <div class="navlabel">Painel</div>
     <div id="nav"></div>
@@ -117,15 +172,60 @@ td.ref{color:var(--muted2);font-size:12px}
       <input id="file" type="file" accept=".xlsx" style="display:none">
       <div class="updated" id="updated"></div>
     </div>
-    <div class="content" id="content"><div class="loader">Carregando planilha…</div></div>
+    <div class="content" id="content"><div class="loader">Carregando…</div></div>
   </div>
 </div>
+<div id="tip"></div>
 <script>
+/* ============ constantes ============ */
 const PLAYERS=["Camisa","Danilo","Dudu","Paciraro","Schmidt"];
+const BENCH="Reg Aggro";
 const XLSX_FILE="Guerreiros_Catalogo.xlsx";
 let DATA=null, curSection="__overview__", curPlayer="Todos";
 
-/* ---------- parsing (mirror do catálogo) ---------- */
+/* perfil: stats descritivas (das capturas de julho — hands / winrate EV / won s/ showdown).
+   As demais (VPIP,PFR,3BET,F3BET,WWSF) vêm da planilha, com faixa. */
+const PROFILE_EXTRA={
+  "Camisa":  {hands:"174k", winrate:11,  wonNoSD:-16},
+  "Danilo":  {hands:"91k",  winrate:10,  wonNoSD:-15},
+  "Dudu":    {hands:"177k", winrate:2.4, wonNoSD:-18},
+  "Paciraro":{hands:"158k", winrate:5.6, wonNoSD:-17},
+  "Schmidt": {hands:"102k", winrate:8.5, wonNoSD:-7.2},
+  "Reg Aggro":{hands:"22m", winrate:6.7, wonNoSD:-6.9}
+};
+
+/* ============ logo (placeholder swappável por logo.png) ============ */
+const LOGO_SVG=`<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<defs><radialGradient id="bg" cx="50%" cy="38%" r="72%"><stop offset="0%" stop-color="#1c1208"/><stop offset="100%" stop-color="#0a0a0c"/></radialGradient>
+<linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffd766"/><stop offset="55%" stop-color="#e0a92a"/><stop offset="100%" stop-color="#a9750a"/></linearGradient>
+<linearGradient id="red" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8342b"/><stop offset="100%" stop-color="#9c1712"/></linearGradient></defs>
+<circle cx="50" cy="50" r="48" fill="url(#bg)" stroke="url(#gold)" stroke-width="3.5"/>
+<circle cx="50" cy="50" r="41.5" fill="none" stroke="#3a2a0d" stroke-width="1"/>
+<!-- crista (plume) vermelha -->
+<path d="M50 14 C58 19 63 27 62 35 L56.5 35 C56 29 53.5 24.5 50 22 C46.5 24.5 44 29 43.5 35 L38 35 C37 27 42 19 50 14 Z" fill="url(#red)"/>
+<!-- capacete corinthian, de frente -->
+<path d="M34 41 C34 30 41 25 50 25 C59 25 66 30 66 41 L66 53 C66 64 59 71 50 74 C41 71 34 64 34 53 Z" fill="url(#gold)"/>
+<!-- borda interna -->
+<path d="M37 42 C37 33 43 29 50 29 C57 29 63 33 63 42 L63 52 C63 62 57 68 50 70.5 C43 68 37 62 37 52 Z" fill="none" stroke="#8a6208" stroke-width="1" opacity="0.7"/>
+<!-- olheiras (eye slits) -->
+<path d="M40 44 C42 43 45.5 43 47 44 L47 49 C45 50 42 50 40 49 Z" fill="#0a0a0c"/>
+<path d="M60 44 C58 43 54.5 43 53 44 L53 49 C55 50 58 50 60 49 Z" fill="#0a0a0c"/>
+<!-- protetor nasal -->
+<rect x="48.4" y="45" width="3.2" height="21" rx="1.3" fill="#0a0a0c"/>
+<!-- naipes: espadas e paus -->
+<path d="M30 70 C27 73.5 29.6 77 32.4 74.4 C31.6 76.6 30.9 77.6 30 78.5 L35.6 78.5 C34.7 77.6 34 76.6 33.2 74.4 C36 77 38.6 73.5 35.6 70 C33.6 67.4 32 67.4 30 70 Z" fill="url(#gold)"/>
+<path d="M70 71 C67.6 71 66 73 66.6 75 C64.8 74 62.6 75.4 63.2 77.4 C63.6 78.8 65.4 79 66.6 78.2 C66.3 79.2 65.6 80 64.8 80.6 L75.2 80.6 C74.4 80 73.7 79.2 73.4 78.2 C74.6 79 76.4 78.8 76.8 77.4 C77.4 75.4 75.2 74 73.4 75 C74 73 72.4 71 70 71 Z" fill="#e8e8ea"/>
+</svg>`;
+(function initLogo(){
+  const box=document.getElementById("logoBox");
+  const img=new Image();
+  img.onload=()=>{box.innerHTML="";box.appendChild(img);};
+  img.onerror=()=>{box.innerHTML=LOGO_SVG;};
+  img.src="logo.png";
+  box.innerHTML=LOGO_SVG; // mostra o placeholder já; troca se logo.png existir
+})();
+
+/* ============ parsing ============ */
 function toNum(v){
   if(v===null||v===undefined||v==="")return null;
   if(typeof v==="number")return v;
@@ -163,7 +263,77 @@ function parseWorkbook(wb){
   return {meta:{players:PLAYERS},sections};
 }
 
-/* ---------- coloring ---------- */
+/* ============ layouts das seções (estilo hand2note) ============ */
+const LAYOUTS={
+ "Stack Sizes":[
+   {kind:"matrix",title:"VPIP / PFR por faixa de stack",rowLabel:"Faixa",
+    rows:["[0;12]","[12;19]","[19;30]","[30;60]","[60;100]",">100"],cols:["VPIP","PFR"],
+    key:(r,c)=>({group:"VPIP / PFR por faixa de stack",stat:c+" "+r})}
+ ],
+ "Positions":[
+   {kind:"matrix",title:"VPIP / PFR / Win Rate por posição",rowLabel:"Posição",
+    rows:["BB","SB","BTN","CO","MP","EP","UTG #1","UTG #2"],cols:["VPIP","PFR","WR"],
+    colLbl:{VPIP:"VPIP",PFR:"PFR",WR:"Win Rate"},
+    key:(r,c)=> c==="WR"?({group:"Win Rate por posição  (bb/100)",stat:"WR "+r})
+                        :({group:"VPIP / PFR por posição",stat:c+" "+r})}
+ ],
+ "Preflop":[
+   {kind:"strip",title:"Geral (topo)",stats:[
+     {group:"GERAL (topo do print)",stat:"VPIP"},{group:"GERAL (topo do print)",stat:"PFR"},
+     {group:"GERAL (topo do print)",stat:"3BET"},{group:"GERAL (topo do print)",stat:"F3BET"},
+     {group:"GERAL (topo do print)",stat:"SQZ"},{group:"GERAL (topo do print)",stat:"4BET"},
+     {group:"GERAL (topo do print)",stat:"F4BET"}]},
+   {kind:"matrix",title:"RFI / 3BET / FLAT por posição",rowLabel:"Posição",
+    rows:["UTG","MP","LJ","HJ","CO","BTN","SB","BB"],cols:["RFI","3BET","FLAT"],
+    key:(r,c)=> c==="RFI"?({group:"RFI por posição",stat:"RFI "+r})
+              : c==="3BET"?({group:"3BET por posição",stat:"3BET "+r})
+              : ({group:"FLAT / CALL por posição",stat:"FLAT "+r})},
+   {kind:"strip",title:"Pós-flop (geral)",stats:[
+     {group:"Pós-flop (geral)",stat:"WWSF"},{group:"Pós-flop (geral)",stat:"WSD"},
+     {group:"Pós-flop (geral)",stat:"W$SD"}]}
+ ],
+ "RFI":[
+   {kind:"matrix",title:"RFI — posição × faixa de stack",rowLabel:"Posição",
+    rows:["UTG","MP","LJ","HJ","CO","BTN","SB"],
+    cols:["ALL","< 12","12-19","19-30","30-60","> 60"],
+    colGroup:{"ALL":"RFI — ALL","< 12":"RFI — < 12 bb","12-19":"RFI — 12 - 19 bb","19-30":"RFI — 19 - 30 bb","30-60":"RFI — 30 - 60 bb","> 60":"RFI — > 60 bb"},
+    key:function(r,c){return {group:this.colGroup[c],stat:"RFI "+r};}}
+ ],
+ "3Bet Simple":[
+   {kind:"matrix",title:"3BET — herói (linha) × quem abriu (coluna)",rowLabel:"Herói",
+    rows:["MP","LJ","HJ","CO","BTN","SB","BB"],cols:["UTG","MP","LJ","HJ","CO","BTN","SB"],
+    colPre:"vs ",key:(r,c)=>({group:"Herói "+r,stat:"3BET "+r+" vs "+c})},
+   {kind:"matrix",title:"FOLD to 3BET",rowLabel:"Posição",
+    rows:["UTG","MP","LJ","HJ","CO","BTN","SB"],cols:["IP","OOP"],
+    key:(r,c)=>({group:c==="IP"?"FOLD to 3BET — In Position (IP)":"FOLD to 3BET — Out of Position (OOP)",stat:"F3BET "+r+" ("+c+")"})}
+ ],
+ "3Bet Resteal":[
+   {kind:"matrix",title:"3BET Resteal (all-in) — herói × quem abriu · < 20 BBs",rowLabel:"Herói",
+    rows:["BB","SB","BTN","CO","HJ","MP","EP"],cols:["EP","MP","HJ","CO","BTN","SB"],
+    colPre:"vs ",key:(r,c)=>({group:"Herói "+r,stat:"3BET-RS "+r+" vs "+c+" (AI)"})}
+ ],
+ "BB Defense":[
+   {kind:"matrix",title:"Small Blind — ALL",rowLabel:"Abriu",
+    rows:["TOTAL","BTN","CO","MP","EP"],cols:["FOLD","CALL","3B NAI","3B AI"],
+    key:(r,c)=>({group:"SMALL BLIND — ALL",stat:r+" · "+c})},
+   {kind:"matrix",title:"Big Blind — ALL",rowLabel:"Abriu",
+    rows:["TOTAL","BTN","CO","MP","EP"],cols:["FOLD","CALL","3B NAI","3B AI"],
+    key:(r,c)=>({group:"BIG BLIND — ALL",stat:r+" · "+c})}
+ ],
+ "Blind War":[
+   {kind:"matrix",title:"SB vs BB",rowLabel:"Ação",
+    rows:["RFI","SHOVE","LIMP/CALL","LIMP/FOLD","LIMP/RAISE"],
+    cols:["ALL STACKS","0 - 20 BBs","20 - 50 BBs","50 BBs +"],
+    key:(r,c)=>({group:c+" — SB vs BB",stat:r})},
+   {kind:"matrix",title:"BB vs SB",rowLabel:"Ação",
+    rows:["CALL","FOLD","3B NAI","3B AI","R VS L","X VS L"],
+    cols:["ALL STACKS","0 - 20 BBs","20 - 50 BBs","50 BBs +"],
+    key:(r,c)=>({group:c+" — BB vs SB",stat:r})}
+ ]
+};
+const POSTFLOP=["IP Agressor","OOP Agressor","IP Passivo","OOP Passivo"];
+
+/* ============ helpers de valor/cor ============ */
 function classify(v,mn,mx){
   if(v===null||v===undefined)return "na";
   if(mn!==null&&mn!==undefined&&v<mn)return "red";
@@ -172,127 +342,270 @@ function classify(v,mn,mx){
 }
 function fmt(v){ if(v===null||v===undefined)return "–"; return (Math.round(v*100)/100); }
 function faixaTxt(mn,mx){
-  if(mn===null&&mx===null)return "—";
+  if(mn===null&&mx===null)return "sem faixa";
   if(mn!==null&&mx===null)return "≥ "+fmt(mn);
   if(mn===null&&mx!==null)return "≤ "+fmt(mx);
   return fmt(mn)+" – "+fmt(mx);
 }
-/* count out-of-range for a player in a section */
+function valueFor(s,player){ return player===BENCH ? s.reg : (s.vals?s.vals[player]:null); }
+function hasRange(s){ return s.min!==null&&s.min!==undefined || s.max!==null&&s.max!==undefined; }
+function classFor(s,player){
+  const v=valueFor(s,player);
+  if(v===null||v===undefined)return "na";
+  if(player===BENCH||!hasRange(s))return "neutral";
+  return classify(v,s.min,s.max);
+}
+/* contagem por seção/jogador */
+function sectionRanged(sec){let n=0;sec.groups.forEach(g=>g.stats.forEach(s=>{if(hasRange(s))n++;}));return n;}
 function countSec(sec,player){
-  let r=0,g=0,t=0;
+  let r=0,g=0;
+  const ps = player==="Todos"?PLAYERS:[player];
   sec.groups.forEach(gr=>gr.stats.forEach(s=>{
-    const ps=player==="Todos"?PLAYERS:[player];
-    ps.forEach(p=>{const c=classify(s.vals[p],s.min,s.max); if(c==="red"){r++;t++;} else if(c==="green"){g++;t++;}});
+    if(!hasRange(s))return;
+    ps.forEach(p=>{const c=classify(s.vals[p],s.min,s.max); if(c==="red")r++; else if(c==="green")g++;});
   }));
-  return {r,g,t};
+  return {r,g,t:sectionRanged(sec)*ps.length};
+}
+function getStat(secName,groupName,statName){
+  const sec=DATA.sections.find(s=>s.name===secName); if(!sec)return null;
+  const g=sec.groups.find(g=>g.name===groupName); if(!g)return null;
+  return g.stats.find(s=>s.stat===statName)||null;
 }
 
-/* ---------- rendering ---------- */
+/* ============ tooltip ============ */
+const tipEl=document.getElementById("tip");
+function bindTips(root){
+  root.querySelectorAll("[data-tip]").forEach(el=>{
+    el.addEventListener("mousemove",e=>{
+      tipEl.innerHTML=el.getAttribute("data-tip");
+      tipEl.style.opacity="1";
+      let x=e.clientX+14, y=e.clientY+16;
+      const w=tipEl.offsetWidth,h=tipEl.offsetHeight;
+      if(x+w>window.innerWidth-8)x=e.clientX-w-14;
+      if(y+h>window.innerHeight-8)y=e.clientY-h-16;
+      tipEl.style.left=x+"px"; tipEl.style.top=y+"px";
+    });
+    el.addEventListener("mouseleave",()=>{tipEl.style.opacity="0";});
+  });
+}
+
+/* ============ nav (menu esquerdo) ============ */
+function badgeHTML(c){
+  if(!c.r&&!c.g)return `<span class="ok">OK</span>`;
+  return `<span class="badge"><span class="r">${c.r}<span class="arrow">▼</span></span> <span class="g">${c.g}<span class="arrow">▲</span></span> <span class="t">(${c.t})</span></span>`;
+}
 function renderNav(){
   const nav=document.getElementById("nav");
-  let html=`<div class="navitem ${curSection==='__overview__'?'active':''}" data-sec="__overview__"><span>▦ Visão Geral</span></div>`;
+  const who = curPlayer==="Todos"?"Todos":curPlayer;
+  let html=`<div class="navitem ${curSection==='__overview__'?'active':''}" data-sec="__overview__"><span class="nm">▦ Visão Geral</span></div>`;
   html+=`<div class="navlabel">Seções</div>`;
-  DATA.sections.forEach(sec=>{
-    const c=countSec(sec,curPlayer==="Todos"?"Todos":curPlayer);
-    const badge=(c.r||c.g)?`<span class="badge"><b>${c.r}</b> · <i>${c.g}</i></span>`:`<span class="badge">✓</span>`;
-    html+=`<div class="navitem ${curSection===sec.name?'active':''}" data-sec="${sec.name}"><span>${sec.name}</span>${badge}</div>`;
+  DATA.sections.forEach((sec,i)=>{
+    const c = who===BENCH?{r:0,g:0,t:sectionRanged(sec)}:countSec(sec,who);
+    html+=`<div class="navitem ${curSection===sec.name?'active':''}" data-sec="${sec.name}">
+      <span class="nm"><span class="num">${i+1}</span><span>${sec.name}</span></span>${badgeHTML(c)}</div>`;
   });
   nav.innerHTML=html;
   nav.querySelectorAll(".navitem").forEach(el=>el.onclick=()=>{curSection=el.dataset.sec;render();});
 }
 function renderPlayers(){
   const el=document.getElementById("players");
-  const opts=["Todos",...PLAYERS];
-  el.innerHTML=opts.map(p=>`<div class="pchip ${p==='Todos'?'all':''} ${curPlayer===p?'active':''}" data-p="${p}">${p}</div>`).join("");
+  const opts=["Todos",BENCH,...PLAYERS];
+  el.innerHTML=opts.map(p=>{
+    const cls=p==="Todos"?"all":p===BENCH?"bench":"";
+    return `<div class="pchip ${cls} ${curPlayer===p?'active':''}" data-p="${p}">${p}</div>`;
+  }).join("");
   el.querySelectorAll(".pchip").forEach(c=>c.onclick=()=>{curPlayer=c.dataset.p;render();});
 }
-function valCell(s,p){
-  const c=classify(s.vals[p],s.min,s.max);
-  const tag=c==="red"?`<span class="tag red">▼</span>`:c==="green"?`<span class="tag green">▲</span>`:"";
-  return `<td class="val ${c}">${fmt(s.vals[p])}${tag}</td>`;
+
+/* ============ células/tabelas ============ */
+function tipFor(s){
+  const rng=faixaTxt(s.min,s.max);
+  return `<div class="tt">alvo (faixa)</div><b>${rng}</b><div class="tt" style="margin-top:5px">reg aggro</div>${fmt(s.reg)}`;
 }
-function renderSection(sec){
-  document.getElementById("topTitle").textContent=sec.name;
-  const c=countSec(sec,curPlayer);
-  const sub= curPlayer==="Todos"
-     ? `Comparando os 5 jogadores. <span class="pill-counts"><b>${c.r} abaixo do mín</b> · <i>${c.g} acima do máx</i></span>`
-     : `${curPlayer} · <span class="pill-counts"><b>${c.r} abaixo do mín</b> · <i>${c.g} acima do máx</i></span>`;
-  let html=`<div class="secttitle">${sec.name}</div><div class="sectsub">${sub}</div>`;
-  html+=`<div class="legend"><span><i class="dot n"></i> normal</span><span><i class="dot r"></i> abaixo do mínimo</span><span><i class="dot g"></i> acima do máximo</span></div>`;
-  sec.groups.forEach(gr=>{
-    if(!gr.stats.length)return;
-    html+=`<div class="group">`;
-    if(gr.name) html+=`<h3>${gr.name}</h3>`;
-    html+=`<table><thead><tr><th class="stat">Stat</th>`;
-    if(curPlayer==="Todos"){ PLAYERS.forEach(p=>html+=`<th>${p}</th>`); }
-    else { html+=`<th>${curPlayer}</th>`; }
-    html+=`<th>Reg</th><th>Faixa</th></tr></thead><tbody>`;
-    gr.stats.forEach(s=>{
-      html+=`<tr><td class="stat">${s.stat}</td>`;
-      if(curPlayer==="Todos"){ PLAYERS.forEach(p=>html+=valCell(s,p)); }
-      else { html+=valCell(s,curPlayer); }
-      html+=`<td class="ref">${fmt(s.reg)}</td><td class="faixa">${faixaTxt(s.min,s.max)}</td></tr>`;
+function cellTd(s,player,extraClass){
+  if(!s)return `<td class="mc empty"></td>`;
+  const v=valueFor(s,player);
+  const cls=classFor(s,player);
+  if(v===null||v===undefined)return `<td class="mc na ${extraClass||''}">–</td>`;
+  const tip = hasRange(s)? ` data-tip='${tipFor(s)}'` : ` data-tip='<div class="tt">sem faixa</div>descritiva'`;
+  return `<td class="mc ${cls} ${extraClass||''}"${tip}>${fmt(v)}</td>`;
+}
+function matrixHTML(cfg,map,player){
+  let h=`<div class="tblcard"><h3>${cfg.title}</h3><div class="tbl-wrap"><table class="mtx"><thead><tr><th class="corner"></th>`;
+  cfg.cols.forEach(c=>h+=`<th>${(cfg.colPre||'')}${(cfg.colLbl&&cfg.colLbl[c])||c}</th>`);
+  h+=`</tr></thead><tbody>`;
+  cfg.rows.forEach(r=>{
+    h+=`<tr><td class="rowh">${r}</td>`;
+    cfg.cols.forEach(c=>{
+      const kk=cfg.key(r,c); const s=kk?map[kk.group+"|||"+kk.stat]:null;
+      h+=cellTd(s,player);
     });
-    html+=`</tbody></table></div>`;
+    h+=`</tr>`;
   });
-  document.getElementById("content").innerHTML=html;
+  h+=`</tbody></table></div></div>`;
+  return h;
 }
-function renderOverview(){
+function stripHTML(cfg,map,player){
+  let h=`<div class="tblcard"><h3>${cfg.title}</h3><div class="tbl-wrap"><table class="strip"><thead><tr>`;
+  cfg.stats.forEach(st=>h+=`<th>${st.stat}</th>`);
+  h+=`</tr></thead><tbody><tr>`;
+  cfg.stats.forEach(st=>{const s=map[st.group+"|||"+st.stat];h+=cellTd(s,player);});
+  h+=`</tr></tbody></table></div></div>`;
+  return h;
+}
+function streetsHTML(sec,player){
+  let h=`<div class="streets">`;
+  sec.groups.forEach(g=>{
+    const ranged=g.stats.filter(hasRange);
+    if(!ranged.length)return;
+    h+=`<div class="street"><h4>${g.name}</h4><table class="linetbl"><tbody>`;
+    ranged.forEach(s=>{ h+=`<tr><td class="ln">${s.stat}</td>${cellTd(s,player)}</tr>`; });
+    h+=`</tbody></table></div>`;
+  });
+  h+=`</div>`;
+  return h;
+}
+function buildMap(sec){const m={};sec.groups.forEach(g=>g.stats.forEach(s=>{m[g.name+"|||"+s.stat]=s;}));return m;}
+
+/* ============ render seção ============ */
+function renderSection(sec){
+  let player=curPlayer;
+  let note="";
+  if(player==="Todos"){ player=BENCH; note=`Mostrando o perfil <b style="color:var(--gold)">Reg Aggro</b> (benchmark). Selecione um jogador acima para ver os dados dele.`; }
+  document.getElementById("topTitle").textContent=sec.name;
+  const c = player===BENCH?{r:0,g:0,t:sectionRanged(sec)}:countSec(sec,player);
+  const cnt = player===BENCH
+     ? `<span class="counts"><span class="t">${c.t} stats · benchmark</span></span>`
+     : `<span class="counts"><span class="r">${c.r}<span class="arrow">▼</span></span><span class="g">${c.g}<span class="arrow">▲</span></span><span class="t">(${c.t})</span></span>`;
+  let html=`<div class="secthead"><h1 class="secttitle">${sec.name} · <span class="pname">${player}</span></h1>${cnt}</div>`;
+  html+=`<div class="legend"><span><i class="dot n"></i> OK</span><span><i class="dot r"></i> abaixo do mín.</span><span><i class="dot g"></i> acima do máx.</span><span style="color:var(--muted2)">passe o mouse na stat p/ ver a faixa</span></div>`;
+  if(note)html+=`<div class="hint">${note}</div>`;
+  const map=buildMap(sec);
+  if(LAYOUTS[sec.name]){
+    html+=`<div class="tblgrid">`;
+    LAYOUTS[sec.name].forEach(cfg=>{
+      html+= cfg.kind==="matrix"?matrixHTML(cfg,map,player):stripHTML(cfg,map,player);
+    });
+    html+=`</div>`;
+  } else if(POSTFLOP.includes(sec.name)){
+    html+=streetsHTML(sec,player);
+  } else {
+    html+=streetsHTML(sec,player);
+  }
+  const cont=document.getElementById("content");
+  cont.innerHTML=html; bindTips(cont);
+}
+
+/* ============ render overview ============ */
+function tileHTML(label,desc,value,cls,rngTxt){
+  return `<div class="tile"><div class="tv ${cls}">${value}</div><div class="tk">${label}</div><div class="td">${desc}</div>${rngTxt?`<div class="frng">${rngTxt}</div>`:''}</div>`;
+}
+function profileTile(secName,groupName,statName,label,desc,player){
+  const s=getStat(secName,groupName,statName);
+  if(!s)return tileHTML(label,desc,"–","na","");
+  const v=valueFor(s,player);
+  const cls=classFor(s,player);
+  const rng=hasRange(s)?("alvo "+faixaTxt(s.min,s.max)):"";
+  return tileHTML(label,desc,fmt(v),cls,rng);
+}
+function renderPlayerOverview(player){
+  document.getElementById("topTitle").textContent="Visão Geral · "+player;
+  const ex=PROFILE_EXTRA[player]||{hands:"–",winrate:null,wonNoSD:null};
+  let html=`<div class="secthead"><h1 class="secttitle">Perfil · <span class="pname">${player}</span></h1></div>`;
+  html+=`<div class="pfhead">Resumo do jogador. Stats com faixa ficam <span style="color:var(--red)">vermelhas</span> abaixo do mínimo e <span style="color:var(--green)">verdes</span> acima do máximo.</div>`;
+  // Grupo 1: geral / stack sizes
+  html+=`<div class="pfgroup"><div class="glbl">Geral</div><div class="tiles">`;
+  html+=tileHTML("Mãos","total de mãos jogadas",ex.hands,"neutral","");
+  html+=profileTile("Preflop","Pós-flop (geral)","WWSF","WWSF","ganhou quando viu o flop (%)",player);
+  html+=tileHTML("Won s/ Showdown","bb/100 ganho sem showdown",(ex.wonNoSD==null?"–":ex.wonNoSD),"neutral","");
+  html+=tileHTML("Win Rate EV","bb/100 (ajustado por EV)",(ex.winrate==null?"–":ex.winrate),"neutral","");
+  html+=`</div></div>`;
+  // Grupo 2: preflop
+  html+=`<div class="pfgroup"><div class="glbl">Preflop</div><div class="tiles">`;
+  html+=profileTile("Preflop","GERAL (topo do print)","VPIP","VPIP","% que entra no pote",player);
+  html+=profileTile("Preflop","GERAL (topo do print)","PFR","PFR","% que aumenta preflop",player);
+  html+=profileTile("Preflop","GERAL (topo do print)","3BET","3BET","% de 3-bet",player);
+  html+=profileTile("Preflop","GERAL (topo do print)","F3BET","F3BET","% que folda pro 3-bet",player);
+  html+=`</div></div>`;
+  // menu de seções 3x4
+  html+=`<div class="smtitle">Seções — clique para abrir os leaks de ${player}</div><div class="secmenu">`;
+  DATA.sections.forEach((sec,i)=>{
+    const c = player===BENCH?{r:0,g:0,t:sectionRanged(sec)}:countSec(sec,player);
+    const inner = (!c.r&&!c.g)?`<span class="ok">OK</span> <span style="color:var(--muted2);font-weight:600">(${c.t})</span>`
+      :`<span class="r">${c.r}<span class="arrow">▼</span></span><span class="g">${c.g}<span class="arrow">▲</span></span><span style="color:var(--muted2);font-weight:600">(${c.t})</span>`;
+    html+=`<div class="seccard" data-sec="${sec.name}"><div class="sn">Seção ${i+1}</div><div class="st">${sec.name}</div><div class="sc">${inner}</div></div>`;
+  });
+  html+=`</div>`;
+  const cont=document.getElementById("content");
+  cont.innerHTML=html; bindTips(cont);
+  cont.querySelectorAll(".seccard").forEach(el=>el.onclick=()=>{curSection=el.dataset.sec;render();});
+}
+function renderHeatmap(){
   document.getElementById("topTitle").textContent="Visão Geral";
-  // KPIs
   let totR=0,totG=0;
-  const perPlayer={}; PLAYERS.forEach(p=>perPlayer[p]={r:0,g:0});
-  DATA.sections.forEach(sec=>PLAYERS.forEach(p=>{const c=countSec(sec,p);perPlayer[p].r+=c.r;perPlayer[p].g+=c.g;totR+=c.r;totG+=c.g;}));
-  let html=`<div class="secttitle">Visão Geral</div><div class="sectsub">Quantas stats de cada jogador estão fora do intervalo, por seção. Clique numa célula pra abrir a seção.</div>`;
+  DATA.sections.forEach(sec=>PLAYERS.forEach(p=>{const c=countSec(sec,p);totR+=c.r;totG+=c.g;}));
+  let html=`<div class="secthead"><h1 class="secttitle">Visão Geral</h1></div>`;
+  html+=`<div class="pfhead">Quantas stats de cada jogador estão fora da faixa, por seção. Clique numa célula para abrir a seção do jogador.</div>`;
   html+=`<div class="kpis">
      <div class="kpi"><div class="k">Jogadores</div><div class="v blue">5</div></div>
      <div class="kpi"><div class="k">Seções</div><div class="v blue">${DATA.sections.length}</div></div>
      <div class="kpi"><div class="k">Abaixo do mínimo</div><div class="v red">${totR}</div></div>
      <div class="kpi"><div class="k">Acima do máximo</div><div class="v green">${totG}</div></div>
   </div>`;
-  html+=`<div class="legend"><span><i class="dot r"></i> nº abaixo do mín</span><span><i class="dot g"></i> nº acima do máx</span></div>`;
+  html+=`<div class="legend"><span><i class="dot r"></i> stat abaixo do mín.</span><span><i class="dot g"></i> stat acima do máx.</span></div>`;
   html+=`<div class="ovwrap"><table class="heat"><thead><tr><th class="pl"></th>`;
   DATA.sections.forEach(sec=>html+=`<th>${sec.name.replace(' ','<br>')}</th>`);
   html+=`</tr></thead><tbody>`;
   PLAYERS.forEach(p=>{
-    html+=`<tr><td class="pl">${p}</td>`;
+    html+=`<tr><td class="pl" data-p="${p}">${p}</td>`;
     DATA.sections.forEach(sec=>{
       const c=countSec(sec,p); const clean=(c.r+c.g)===0;
-      html+=`<td><div class="cell ${clean?'clean':''}" data-sec="${sec.name}" data-p="${p}">
-        <div class="n"><b>${c.r}</b> <span style="color:var(--muted2)">/</span> <i>${c.g}</i></div>
-        <div class="mini">${clean?'ok':'fora'}</div></div></td>`;
+      if(clean){
+        html+=`<td><div class="cell clean" data-sec="${sec.name}" data-p="${p}"><span class="okbig">OK</span></div></td>`;
+      }else{
+        html+=`<td><div class="cell" data-sec="${sec.name}" data-p="${p}">
+          <div class="rr">${c.r}<span class="arrow">▼</span></div>
+          <div class="gg">${c.g}<span class="arrow">▲</span></div></div></td>`;
+      }
     });
     html+=`</tr>`;
   });
   html+=`</tbody></table></div>`;
-  html+=`<div class="ovnote">Legenda por célula: <b style="color:var(--red)">vermelho</b> = stats abaixo do mínimo · <i style="color:var(--green)">verde</i> = acima do máximo.</div>`;
-  document.getElementById("content").innerHTML=html;
-  document.querySelectorAll(".cell").forEach(el=>el.onclick=()=>{curPlayer=el.dataset.p;curSection=el.dataset.sec;render();});
+  html+=`<div class="ovnote">Legenda: <span style="color:var(--red)">vermelho ▼</span> = abaixo do mínimo · <span style="color:var(--green)">verde ▲</span> = acima do máximo · <span style="color:var(--blue)">OK</span> = tudo dentro da faixa.</div>`;
+  const cont=document.getElementById("content");
+  cont.innerHTML=html;
+  cont.querySelectorAll(".cell").forEach(el=>el.onclick=()=>{curPlayer=el.dataset.p;curSection=el.dataset.sec;render();});
+  cont.querySelectorAll(".pl").forEach(el=>el.onclick=()=>{curPlayer=el.dataset.p;curSection="__overview__";render();});
 }
+function renderOverview(){
+  if(curPlayer==="Todos")renderHeatmap();
+  else renderPlayerOverview(curPlayer);
+}
+
+/* ============ render principal ============ */
 function render(){
   renderPlayers(); renderNav();
-  if(curSection==="__overview__") renderOverview();
-  else { const sec=DATA.sections.find(s=>s.name===curSection); if(sec) renderSection(sec); else renderOverview(); }
+  if(curSection==="__overview__")renderOverview();
+  else { const sec=DATA.sections.find(s=>s.name===curSection); if(sec)renderSection(sec); else renderOverview(); }
   window.scrollTo(0,0);
 }
 
-/* ---------- loading ---------- */
-function setUpdated(txt){document.getElementById("updated").textContent=txt;}
+/* ============ carregamento ============ */
+function setUpdated(t){document.getElementById("updated").textContent=t;}
 async function loadFromXlsx(){
   try{
     const res=await fetch(XLSX_FILE,{cache:"no-store"});
-    if(!res.ok)throw new Error("no xlsx");
-    const buf=await res.arrayBuffer();
-    DATA=parseWorkbook(XLSX.read(buf,{type:"array"}));
-    setUpdated("planilha · "+XLSX_FILE);
-    render(); return true;
+    if(!res.ok)throw 0;
+    DATA=parseWorkbook(XLSX.read(await res.arrayBuffer(),{type:"array"}));
+    setUpdated("planilha · "+XLSX_FILE); render(); return true;
   }catch(e){return false;}
 }
 async function loadFromJson(){
   try{
     const res=await fetch("data.json",{cache:"no-store"});
-    if(!res.ok)throw new Error("no json");
-    DATA=await res.json(); setUpdated("dados embutidos"); render(); return true;
+    if(!res.ok)throw 0;
+    DATA=await res.json(); if(!DATA.meta)DATA.meta={players:PLAYERS};
+    setUpdated("dados · data.json"); render(); return true;
   }catch(e){return false;}
 }
 document.getElementById("file").addEventListener("change",ev=>{
@@ -304,10 +617,9 @@ document.getElementById("file").addEventListener("change",ev=>{
 (async()=>{
   if(await loadFromXlsx())return;
   if(await loadFromJson())return;
-  if(window.__EMBEDDED__){DATA=window.__EMBEDDED__;setUpdated("dados embutidos");render();return;}
-  document.getElementById("content").innerHTML='<div class="loader">Não consegui carregar a planilha. Use "Trocar planilha" pra enviar o arquivo .xlsx.</div>';
+  if(window.__EMBEDDED__){DATA=window.__EMBEDDED__;if(!DATA.meta)DATA.meta={players:PLAYERS};setUpdated("dados embutidos");render();return;}
+  document.getElementById("content").innerHTML='<div class="loader">Não consegui carregar os dados. Use "Trocar planilha".</div>';
 })();
 </script>
-<script>window.__EMBEDDED__={"meta":{"players":["Camisa","Danilo","Dudu","Paciraro","Schmidt"],"generated":"2026-07-18"},"sections":[{"name":"Stack Sizes","groups":[{"name":"% de mãos por faixa de stack  (tempo jogado em cada faixa; soma = 100%)","stats":[{"stat":"% [0;12]","reg":5.5,"min":null,"max":null,"vals":{"Camisa":10.9,"Danilo":9.2,"Dudu":7.9,"Paciraro":6,"Schmidt":4.7},"obs":"denominador = soma das 6 faixas"},{"stat":"% [12;19]","reg":8.8,"min":null,"max":null,"vals":{"Camisa":10.9,"Danilo":11.1,"Dudu":11.9,"Paciraro":9.5,"Schmidt":6.9},"obs":"denominador = soma das 6 faixas"},{"stat":"% [19;30]","reg":15.7,"min":null,"max":null,"vals":{"Camisa":16.1,"Danilo":17.7,"Dudu":18.6,"Paciraro":16.5,"Schmidt":12.8},"obs":"denominador = soma das 6 faixas"},{"stat":"% [30;60]","reg":33.6,"min":null,"max":null,"vals":{"Camisa":29.9,"Danilo":31,"Dudu":31.6,"Paciraro":36.2,"Schmidt":31.4},"obs":"denominador = soma das 6 faixas"},{"stat":"% [60;100]","reg":24.4,"min":null,"max":null,"vals":{"Camisa":20.1,"Danilo":19.9,"Dudu":19.8,"Paciraro":23.5,"Schmidt":26.5},"obs":"denominador = soma das 6 faixas"},{"stat":"% >100","reg":12,"min":null,"max":null,"vals":{"Camisa":12.1,"Danilo":11.1,"Dudu":10.2,"Paciraro":8.3,"Schmidt":17.7},"obs":"denominador = soma das 6 faixas"}]},{"name":"VPIP / PFR por faixa de stack","stats":[{"stat":"VPIP [0;12]","reg":25,"min":20,"max":26,"vals":{"Camisa":18,"Danilo":20,"Dudu":23,"Paciraro":23,"Schmidt":31}},{"stat":"PFR [0;12]","reg":21,"min":18,"max":23,"vals":{"Camisa":16,"Danilo":19,"Dudu":22,"Paciraro":20,"Schmidt":26}},{"stat":"VPIP [12;19]","reg":22,"min":19,"max":25,"vals":{"Camisa":21,"Danilo":21,"Dudu":19,"Paciraro":18,"Schmidt":27}},{"stat":"PFR [12;19]","reg":17,"min":16,"max":20,"vals":{"Camisa":16,"Danilo":16,"Dudu":16,"Paciraro":14,"Schmidt":21}},{"stat":"VPIP [19;30]","reg":24,"min":22,"max":26,"vals":{"Camisa":24,"Danilo":23,"Dudu":21,"Paciraro":21,"Schmidt":28}},{"stat":"PFR [19;30]","reg":18,"min":17,"max":20,"vals":{"Camisa":18,"Danilo":17,"Dudu":16,"Paciraro":15,"Schmidt":19}},{"stat":"VPIP [30;60]","reg":28,"min":25,"max":30,"vals":{"Camisa":28,"Danilo":26,"Dudu":26,"Paciraro":23,"Schmidt":29}},{"stat":"PFR [30;60]","reg":19,"min":18,"max":22,"vals":{"Camisa":19,"Danilo":17,"Dudu":18,"Paciraro":15,"Schmidt":18}},{"stat":"VPIP [60;100]","reg":30,"min":27,"max":32,"vals":{"Camisa":31,"Danilo":28,"Dudu":28,"Paciraro":24,"Schmidt":29}},{"stat":"PFR [60;100]","reg":21,"min":18,"max":22,"vals":{"Camisa":20,"Danilo":18,"Dudu":19,"Paciraro":16,"Schmidt":17}},{"stat":"VPIP >100","reg":30,"min":27,"max":32,"vals":{"Camisa":31,"Danilo":29,"Dudu":29,"Paciraro":25,"Schmidt":30}},{"stat":"PFR >100","reg":21,"min":18,"max":22,"vals":{"Camisa":19,"Danilo":19,"Dudu":20,"Paciraro":15,"Schmidt":17}}]}]},{"name":"Positions","groups":[{"name":"VPIP / PFR por posição","stats":[{"stat":"VPIP BB","reg":44,"min":40,"max":46,"vals":{"Camisa":44,"Danilo":39,"Dudu":35,"Paciraro":38,"Schmidt":48}},{"stat":"PFR BB","reg":13,"min":10,"max":14,"vals":{"Camisa":12,"Danilo":11,"Dudu":10,"Paciraro":9.2,"Schmidt":10}},{"stat":"VPIP SB","reg":30,"min":26,"max":32,"vals":{"Camisa":30,"Danilo":29,"Dudu":25,"Paciraro":25,"Schmidt":34}},{"stat":"PFR SB","reg":17,"min":15,"max":19,"vals":{"Camisa":17,"Danilo":16,"Dudu":14,"Paciraro":12,"Schmidt":15}},{"stat":"VPIP BTN","reg":29,"min":26,"max":30,"vals":{"Camisa":28,"Danilo":25,"Dudu":26,"Paciraro":24,"Schmidt":27}},{"stat":"PFR BTN","reg":23,"min":20,"max":25,"vals":{"Camisa":21,"Danilo":18,"Dudu":19,"Paciraro":18,"Schmidt":19}},{"stat":"VPIP CO","reg":26,"min":23,"max":28,"vals":{"Camisa":26,"Danilo":23,"Dudu":23,"Paciraro":21,"Schmidt":26}},{"stat":"PFR CO","reg":22,"min":19,"max":24,"vals":{"Camisa":22,"Danilo":18,"Dudu":19,"Paciraro":18,"Schmidt":19}},{"stat":"VPIP MP","reg":23,"min":21,"max":25,"vals":{"Camisa":22,"Danilo":21,"Dudu":22,"Paciraro":19,"Schmidt":24}},{"stat":"PFR MP","reg":20,"min":18,"max":22,"vals":{"Camisa":20,"Danilo":19,"Dudu":19,"Paciraro":17,"Schmidt":20}},{"stat":"VPIP EP","reg":21,"min":18,"max":22,"vals":{"Camisa":20,"Danilo":20,"Dudu":21,"Paciraro":17,"Schmidt":23}},{"stat":"PFR EP","reg":20,"min":17,"max":21,"vals":{"Camisa":19,"Danilo":19,"Dudu":20,"Paciraro":16,"Schmidt":21}},{"stat":"VPIP UTG #1","reg":20,"min":18,"max":22,"vals":{"Camisa":18,"Danilo":20,"Dudu":21,"Paciraro":16,"Schmidt":23}},{"stat":"PFR UTG #1","reg":19,"min":17,"max":21,"vals":{"Camisa":17,"Danilo":19,"Dudu":20,"Paciraro":16,"Schmidt":22}},{"stat":"VPIP UTG #2","reg":20,"min":17,"max":21,"vals":{"Camisa":17,"Danilo":18,"Dudu":21,"Paciraro":16,"Schmidt":22}},{"stat":"PFR UTG #2","reg":20,"min":17,"max":21,"vals":{"Camisa":17,"Danilo":18,"Dudu":21,"Paciraro":16,"Schmidt":22}},{"stat":"VPIP UTG #3","reg":18,"min":null,"max":null,"vals":{"Camisa":15,"Danilo":20,"Dudu":37,"Paciraro":17,"Schmidt":18},"obs":"amostra pequena"},{"stat":"PFR UTG #3","reg":18,"min":null,"max":null,"vals":{"Camisa":15,"Danilo":20,"Dudu":37,"Paciraro":17,"Schmidt":18},"obs":"amostra pequena"},{"stat":"VPIP BB HU","reg":60,"min":null,"max":null,"vals":{"Camisa":43,"Danilo":32,"Dudu":40,"Paciraro":65,"Schmidt":67},"obs":"amostra pequena"},{"stat":"PFR BB HU","reg":28,"min":null,"max":null,"vals":{"Camisa":30,"Danilo":28,"Dudu":36,"Paciraro":24,"Schmidt":24},"obs":"amostra pequena"},{"stat":"VPIP SB HU","reg":90,"min":null,"max":null,"vals":{"Camisa":92,"Danilo":92,"Dudu":61,"Paciraro":91,"Schmidt":85},"obs":"amostra pequena"},{"stat":"PFR SB HU","reg":60,"min":null,"max":null,"vals":{"Camisa":75,"Danilo":25,"Dudu":39,"Paciraro":87,"Schmidt":62},"obs":"amostra pequena"}]},{"name":"Win Rate por posição  (bb/100)","stats":[{"stat":"WR BB","reg":-31,"min":-35,"max":null,"vals":{"Camisa":-24,"Danilo":-9.5,"Dudu":-40,"Paciraro":-42,"Schmidt":-38}},{"stat":"WR SB","reg":-13,"min":-17,"max":null,"vals":{"Camisa":-7.7,"Danilo":-54,"Dudu":-15,"Paciraro":-18,"Schmidt":-7.6}},{"stat":"WR BTN","reg":29,"min":29,"max":null,"vals":{"Camisa":33,"Danilo":42,"Dudu":27,"Paciraro":29,"Schmidt":38}},{"stat":"WR CO","reg":22,"min":22,"max":null,"vals":{"Camisa":27,"Danilo":26,"Dudu":21,"Paciraro":20,"Schmidt":16}},{"stat":"WR MP","reg":16,"min":16,"max":null,"vals":{"Camisa":18,"Danilo":25,"Dudu":11,"Paciraro":11,"Schmidt":12}},{"stat":"WR EP","reg":14,"min":14,"max":null,"vals":{"Camisa":14,"Danilo":26,"Dudu":3.6,"Paciraro":18,"Schmidt":21}},{"stat":"WR UTG #1","reg":11,"min":11,"max":null,"vals":{"Camisa":15,"Danilo":15,"Dudu":9.3,"Paciraro":23,"Schmidt":18}},{"stat":"WR UTG #2","reg":9.4,"min":9,"max":null,"vals":{"Camisa":13,"Danilo":13,"Dudu":3.4,"Paciraro":4.2,"Schmidt":12}},{"stat":"WR UTG #3","reg":5,"min":null,"max":null,"vals":{"Camisa":36,"Danilo":85,"Dudu":14,"Paciraro":-0.96,"Schmidt":2.2},"obs":"amostra pequena (WR ruidoso)"},{"stat":"WR BB HU","reg":1.2,"min":null,"max":null,"vals":{"Camisa":-37,"Danilo":-24,"Dudu":136,"Paciraro":11,"Schmidt":70},"obs":"amostra pequena (WR ruidoso)"},{"stat":"WR SB HU","reg":11,"min":null,"max":null,"vals":{"Camisa":-9.2,"Danilo":29,"Dudu":40,"Paciraro":37,"Schmidt":-46},"obs":"amostra pequena (WR ruidoso)"}]}]},{"name":"Preflop","groups":[{"name":"GERAL (topo do print)","stats":[{"stat":"VPIP","reg":27,"min":25,"max":29,"vals":{"Camisa":27,"Danilo":25,"Dudu":24,"Paciraro":23,"Schmidt":29}},{"stat":"PFR","reg":19,"min":17,"max":22,"vals":{"Camisa":18,"Danilo":17,"Dudu":18,"Paciraro":15,"Schmidt":18}},{"stat":"3BET","reg":10,"min":9,"max":11,"vals":{"Camisa":9.8,"Danilo":8.6,"Dudu":8.2,"Paciraro":7.3,"Schmidt":8.7}},{"stat":"F3BET","reg":53,"min":45,"max":58,"vals":{"Camisa":49,"Danilo":48,"Dudu":59,"Paciraro":50,"Schmidt":46}},{"stat":"SQZ","reg":9.8,"min":8,"max":11,"vals":{"Camisa":8.5,"Danilo":8.9,"Dudu":8.1,"Paciraro":7.3,"Schmidt":7.3}},{"stat":"4BET","reg":19,"min":15,"max":22,"vals":{"Camisa":15,"Danilo":21,"Dudu":17,"Paciraro":18,"Schmidt":14}},{"stat":"F4BET","reg":47,"min":38,"max":55,"vals":{"Camisa":54,"Danilo":31,"Dudu":35,"Paciraro":35,"Schmidt":49}}]},{"name":"RFI por posição","stats":[{"stat":"RFI UTG","reg":20,"min":17,"max":21,"vals":{"Camisa":17,"Danilo":18,"Dudu":21,"Paciraro":16,"Schmidt":22}},{"stat":"RFI MP","reg":21,"min":18,"max":23,"vals":{"Camisa":19,"Danilo":21,"Dudu":23,"Paciraro":17,"Schmidt":24}},{"stat":"RFI LJ","reg":24,"min":22,"max":26,"vals":{"Camisa":23,"Danilo":23,"Dudu":25,"Paciraro":21,"Schmidt":26}},{"stat":"RFI HJ","reg":29,"min":26,"max":30,"vals":{"Camisa":27,"Danilo":27,"Dudu":28,"Paciraro":25,"Schmidt":29}},{"stat":"RFI CO","reg":38,"min":32,"max":40,"vals":{"Camisa":38,"Danilo":33,"Dudu":35,"Paciraro":32,"Schmidt":35}},{"stat":"RFI BTN","reg":53,"min":47,"max":55,"vals":{"Camisa":51,"Danilo":41,"Dudu":49,"Paciraro":44,"Schmidt":45}},{"stat":"RFI SB","reg":50,"min":40,"max":60,"vals":{"Camisa":54,"Danilo":44,"Dudu":44,"Paciraro":39,"Schmidt":55}},{"stat":"RFI BB","reg":null,"min":null,"max":null,"vals":{"Camisa":null,"Danilo":null,"Dudu":null,"Paciraro":null,"Schmidt":null},"obs":"sem RFI da BB"}]},{"name":"Pós-flop (geral)","stats":[{"stat":"WWSF","reg":48,"min":45,"max":50,"vals":{"Camisa":47,"Danilo":46,"Dudu":44,"Paciraro":45,"Schmidt":47}},{"stat":"WSD","reg":26,"min":23,"max":30,"vals":{"Camisa":29,"Danilo":27,"Dudu":24,"Paciraro":28,"Schmidt":29}},{"stat":"W$SD","reg":50,"min":48,"max":57,"vals":{"Camisa":57,"Danilo":62,"Dudu":52,"Paciraro":54,"Schmidt":51}}]},{"name":"3BET por posição","stats":[{"stat":"3BET UTG","reg":null,"min":null,"max":null,"vals":{"Camisa":null,"Danilo":null,"Dudu":null,"Paciraro":null,"Schmidt":null},"obs":"sem dado"},{"stat":"3BET MP","reg":6.5,"min":5,"max":7.5,"vals":{"Camisa":7.1,"Danilo":6.4,"Dudu":5.3,"Paciraro":3.3,"Schmidt":6.7}},{"stat":"3BET LJ","reg":7.3,"min":6,"max":8.5,"vals":{"Camisa":7.2,"Danilo":6.7,"Dudu":5.4,"Paciraro":4.4,"Schmidt":7.9}},{"stat":"3BET HJ","reg":8.2,"min":7,"max":9.5,"vals":{"Camisa":7.8,"Danilo":6.3,"Dudu":7,"Paciraro":5.5,"Schmidt":7}},{"stat":"3BET CO","reg":9.5,"min":8,"max":11,"vals":{"Camisa":8.7,"Danilo":7.5,"Dudu":8.2,"Paciraro":7,"Schmidt":7.6}},{"stat":"3BET BTN","reg":11,"min":9.5,"max":13,"vals":{"Camisa":9.4,"Danilo":8.2,"Dudu":7.9,"Paciraro":7.6,"Schmidt":8.9}},{"stat":"3BET SB","reg":13,"min":11,"max":16,"vals":{"Camisa":12,"Danilo":11,"Dudu":10,"Paciraro":9.6,"Schmidt":9.8}},{"stat":"3BET BB","reg":13,"min":11,"max":16,"vals":{"Camisa":14,"Danilo":11,"Dudu":10,"Paciraro":9.4,"Schmidt":11}}]},{"name":"FLAT / CALL por posição","stats":[{"stat":"FLAT UTG","reg":null,"min":null,"max":null,"vals":{"Camisa":null,"Danilo":null,"Dudu":null,"Paciraro":null,"Schmidt":null},"obs":"sem dado"},{"stat":"FLAT MP","reg":4.2,"min":3.5,"max":5.5,"vals":{"Camisa":5.3,"Danilo":4.3,"Dudu":4.2,"Paciraro":5.8,"Schmidt":9}},{"stat":"FLAT LJ","reg":4.8,"min":4,"max":6,"vals":{"Camisa":6.6,"Danilo":4.3,"Dudu":6.4,"Paciraro":4.9,"Schmidt":9}},{"stat":"FLAT HJ","reg":6,"min":5,"max":7,"vals":{"Camisa":7.3,"Danilo":5.8,"Dudu":6.5,"Paciraro":5.6,"Schmidt":11}},{"stat":"FLAT CO","reg":8.3,"min":7,"max":9,"vals":{"Camisa":11,"Danilo":8.5,"Dudu":7.7,"Paciraro":6.6,"Schmidt":13}},{"stat":"FLAT BTN","reg":11,"min":11,"max":14,"vals":{"Camisa":14,"Danilo":13,"Dudu":12,"Paciraro":12,"Schmidt":15}},{"stat":"FLAT SB","reg":10,"min":10,"max":14,"vals":{"Camisa":14,"Danilo":11,"Dudu":10,"Paciraro":12,"Schmidt":22}},{"stat":"FLAT BB","reg":53,"min":48,"max":60,"vals":{"Camisa":55,"Danilo":49,"Dudu":44,"Paciraro":50,"Schmidt":64}}]}]},{"name":"RFI","groups":[{"name":"RFI — ALL","stats":[{"stat":"RFI UTG","reg":20,"min":17,"max":21,"vals":{"Camisa":17,"Danilo":18,"Dudu":21,"Paciraro":16,"Schmidt":22}},{"stat":"RFI MP","reg":21,"min":18,"max":23,"vals":{"Camisa":19,"Danilo":21,"Dudu":23,"Paciraro":17,"Schmidt":24}},{"stat":"RFI LJ","reg":24,"min":22,"max":26,"vals":{"Camisa":23,"Danilo":23,"Dudu":25,"Paciraro":21,"Schmidt":26}},{"stat":"RFI HJ","reg":29,"min":26,"max":30,"vals":{"Camisa":27,"Danilo":27,"Dudu":28,"Paciraro":25,"Schmidt":29}},{"stat":"RFI CO","reg":38,"min":32,"max":40,"vals":{"Camisa":38,"Danilo":33,"Dudu":35,"Paciraro":32,"Schmidt":35}},{"stat":"RFI BTN","reg":53,"min":47,"max":55,"vals":{"Camisa":51,"Danilo":41,"Dudu":49,"Paciraro":44,"Schmidt":45}},{"stat":"RFI SB","reg":50,"min":40,"max":60,"vals":{"Camisa":54,"Danilo":44,"Dudu":44,"Paciraro":39,"Schmidt":55}}]},{"name":"RFI — < 12 bb","stats":[{"stat":"RFI UTG","reg":19,"min":15,"max":21,"vals":{"Camisa":12,"Danilo":15,"Dudu":20,"Paciraro":17,"Schmidt":26}},{"stat":"RFI MP","reg":20,"min":17,"max":23,"vals":{"Camisa":13,"Danilo":17,"Dudu":22,"Paciraro":20,"Schmidt":23}},{"stat":"RFI LJ","reg":22,"min":18,"max":25,"vals":{"Camisa":16,"Danilo":18,"Dudu":26,"Paciraro":21,"Schmidt":26}},{"stat":"RFI HJ","reg":26,"min":22,"max":28,"vals":{"Camisa":20,"Danilo":23,"Dudu":26,"Paciraro":24,"Schmidt":30}},{"stat":"RFI CO","reg":31,"min":28,"max":35,"vals":{"Camisa":25,"Danilo":27,"Dudu":30,"Paciraro":29,"Schmidt":37}},{"stat":"RFI BTN","reg":40,"min":37,"max":45,"vals":{"Camisa":35,"Danilo":32,"Dudu":37,"Paciraro":40,"Schmidt":46}},{"stat":"RFI SB","reg":66,"min":65,"max":80,"vals":{"Camisa":67,"Danilo":66,"Dudu":69,"Paciraro":62,"Schmidt":72}}]},{"name":"RFI — 12 - 19 bb","stats":[{"stat":"RFI UTG","reg":15,"min":12,"max":18,"vals":{"Camisa":12,"Danilo":10,"Dudu":16,"Paciraro":12,"Schmidt":19}},{"stat":"RFI MP","reg":16,"min":13,"max":19,"vals":{"Camisa":15,"Danilo":14,"Dudu":17,"Paciraro":12,"Schmidt":23}},{"stat":"RFI LJ","reg":18,"min":15,"max":21,"vals":{"Camisa":18,"Danilo":20,"Dudu":20,"Paciraro":15,"Schmidt":26}},{"stat":"RFI HJ","reg":22,"min":20,"max":26,"vals":{"Camisa":24,"Danilo":21,"Dudu":22,"Paciraro":18,"Schmidt":27}},{"stat":"RFI CO","reg":29,"min":26,"max":33,"vals":{"Camisa":31,"Danilo":27,"Dudu":25,"Paciraro":23,"Schmidt":36}},{"stat":"RFI BTN","reg":42,"min":37,"max":45,"vals":{"Camisa":46,"Danilo":34,"Dudu":37,"Paciraro":35,"Schmidt":46}},{"stat":"RFI SB","reg":54,"min":50,"max":60,"vals":{"Camisa":59,"Danilo":49,"Dudu":55,"Paciraro":45,"Schmidt":63}}]},{"name":"RFI — 19 - 30 bb","stats":[{"stat":"RFI UTG","reg":17,"min":15,"max":21,"vals":{"Camisa":14,"Danilo":15,"Dudu":17,"Paciraro":15,"Schmidt":19}},{"stat":"RFI MP","reg":18,"min":17,"max":23,"vals":{"Camisa":18,"Danilo":20,"Dudu":20,"Paciraro":16,"Schmidt":22}},{"stat":"RFI LJ","reg":21,"min":18,"max":25,"vals":{"Camisa":22,"Danilo":20,"Dudu":23,"Paciraro":18,"Schmidt":24}},{"stat":"RFI HJ","reg":26,"min":22,"max":28,"vals":{"Camisa":26,"Danilo":28,"Dudu":24,"Paciraro":23,"Schmidt":28}},{"stat":"RFI CO","reg":34,"min":30,"max":36,"vals":{"Camisa":39,"Danilo":31,"Dudu":31,"Paciraro":31,"Schmidt":33}},{"stat":"RFI BTN","reg":50,"min":40,"max":50,"vals":{"Camisa":54,"Danilo":42,"Dudu":47,"Paciraro":47,"Schmidt":44}},{"stat":"RFI SB","reg":44,"min":35,"max":50,"vals":{"Camisa":48,"Danilo":34,"Dudu":33,"Paciraro":31,"Schmidt":47}}]},{"name":"RFI — 30 - 60 bb","stats":[{"stat":"RFI UTG","reg":20,"min":16,"max":23,"vals":{"Camisa":18,"Danilo":20,"Dudu":22,"Paciraro":16,"Schmidt":21}},{"stat":"RFI MP","reg":22,"min":18,"max":24,"vals":{"Camisa":20,"Danilo":21,"Dudu":24,"Paciraro":17,"Schmidt":23}},{"stat":"RFI LJ","reg":25,"min":22,"max":27,"vals":{"Camisa":25,"Danilo":26,"Dudu":27,"Paciraro":22,"Schmidt":27}},{"stat":"RFI HJ","reg":30,"min":26,"max":32,"vals":{"Camisa":30,"Danilo":29,"Dudu":30,"Paciraro":25,"Schmidt":31}},{"stat":"RFI CO","reg":41,"min":34,"max":42,"vals":{"Camisa":43,"Danilo":36,"Dudu":40,"Paciraro":34,"Schmidt":36}},{"stat":"RFI BTN","reg":57,"min":48,"max":60,"vals":{"Camisa":56,"Danilo":48,"Dudu":56,"Paciraro":43,"Schmidt":46}},{"stat":"RFI SB","reg":48,"min":40,"max":60,"vals":{"Camisa":51,"Danilo":34,"Dudu":33,"Paciraro":36,"Schmidt":48}}]},{"name":"RFI — > 60 bb","stats":[{"stat":"RFI UTG","reg":22,"min":17,"max":24,"vals":{"Camisa":21,"Danilo":21,"Dudu":24,"Paciraro":18,"Schmidt":23}},{"stat":"RFI MP","reg":23,"min":19,"max":25,"vals":{"Camisa":23,"Danilo":25,"Dudu":26,"Paciraro":19,"Schmidt":25}},{"stat":"RFI LJ","reg":26,"min":23,"max":29,"vals":{"Camisa":26,"Danilo":26,"Dudu":28,"Paciraro":22,"Schmidt":25}},{"stat":"RFI HJ","reg":32,"min":27,"max":34,"vals":{"Camisa":30,"Danilo":30,"Dudu":32,"Paciraro":28,"Schmidt":28}},{"stat":"RFI CO","reg":43,"min":38,"max":46,"vals":{"Camisa":42,"Danilo":35,"Dudu":40,"Paciraro":36,"Schmidt":35}},{"stat":"RFI BTN","reg":62,"min":55,"max":65,"vals":{"Camisa":56,"Danilo":45,"Dudu":58,"Paciraro":48,"Schmidt":45}},{"stat":"RFI SB","reg":48,"min":40,"max":60,"vals":{"Camisa":39,"Danilo":32,"Dudu":36,"Paciraro":28,"Schmidt":54}}]}]},{"name":"3Bet Simple","groups":[{"name":"3BET — herói (linha) vs quem abriu (coluna)","stats":[]},{"name":"Herói MP","stats":[{"stat":"3BET MP vs UTG","reg":6.5,"min":5.3,"max":7.2,"vals":{"Camisa":7.2,"Danilo":6.5,"Dudu":5.3,"Paciraro":3.3,"Schmidt":6.7}}]},{"name":"Herói LJ","stats":[{"stat":"3BET LJ vs UTG","reg":7,"min":3.9,"max":8.5,"vals":{"Camisa":6.5,"Danilo":6.4,"Dudu":4.5,"Paciraro":3.9,"Schmidt":8.5}},{"stat":"3BET LJ vs MP","reg":7.4,"min":5,"max":8,"vals":{"Camisa":7.7,"Danilo":6.9,"Dudu":5.9,"Paciraro":4.7,"Schmidt":7.4}}]},{"name":"Herói HJ","stats":[{"stat":"3BET HJ vs UTG","reg":7.3,"min":5,"max":8,"vals":{"Camisa":6.8,"Danilo":5.3,"Dudu":6.3,"Paciraro":4.6,"Schmidt":6.6}},{"stat":"3BET HJ vs MP","reg":7.9,"min":5.5,"max":8.5,"vals":{"Camisa":7.5,"Danilo":5.4,"Dudu":7.1,"Paciraro":5.5,"Schmidt":6.3}},{"stat":"3BET HJ vs LJ","reg":8.8,"min":6.5,"max":9.5,"vals":{"Camisa":8.4,"Danilo":7.3,"Dudu":7.2,"Paciraro":6.1,"Schmidt":7.8}}]},{"name":"Herói CO","stats":[{"stat":"3BET CO vs UTG","reg":7.2,"min":5,"max":8,"vals":{"Camisa":4.8,"Danilo":5.6,"Dudu":7.7,"Paciraro":4.7,"Schmidt":4.3}},{"stat":"3BET CO vs MP","reg":8.3,"min":6,"max":9,"vals":{"Camisa":7.6,"Danilo":5.5,"Dudu":6.7,"Paciraro":6.5,"Schmidt":7.9}},{"stat":"3BET CO vs LJ","reg":9.7,"min":7,"max":10.5,"vals":{"Camisa":9,"Danilo":8.1,"Dudu":8.2,"Paciraro":7.2,"Schmidt":7.9}},{"stat":"3BET CO vs HJ","reg":11,"min":8,"max":11,"vals":{"Camisa":10,"Danilo":9,"Dudu":9.4,"Paciraro":8.4,"Schmidt":8.9}}]},{"name":"Herói BTN","stats":[{"stat":"3BET BTN vs UTG","reg":6.9,"min":5,"max":7.5,"vals":{"Camisa":5.2,"Danilo":6.4,"Dudu":6,"Paciraro":5.8,"Schmidt":5}},{"stat":"3BET BTN vs MP","reg":7.8,"min":6,"max":8.5,"vals":{"Camisa":6.5,"Danilo":7.1,"Dudu":6.7,"Paciraro":6.2,"Schmidt":6}},{"stat":"3BET BTN vs LJ","reg":9.3,"min":6.5,"max":10,"vals":{"Camisa":8.1,"Danilo":6.6,"Dudu":6.7,"Paciraro":5.8,"Schmidt":9.2}},{"stat":"3BET BTN vs HJ","reg":12,"min":8,"max":13,"vals":{"Camisa":10,"Danilo":9,"Dudu":7.5,"Paciraro":9,"Schmidt":9.8}},{"stat":"3BET BTN vs CO","reg":14,"min":10,"max":15,"vals":{"Camisa":13,"Danilo":10,"Dudu":11,"Paciraro":9.8,"Schmidt":11}}]},{"name":"Herói SB","stats":[{"stat":"3BET SB vs UTG","reg":6.9,"min":5,"max":7.5,"vals":{"Camisa":5.1,"Danilo":6.1,"Dudu":5.5,"Paciraro":4.6,"Schmidt":4.4}},{"stat":"3BET SB vs MP","reg":7.8,"min":5.5,"max":8.5,"vals":{"Camisa":6.2,"Danilo":8,"Dudu":6.4,"Paciraro":5.4,"Schmidt":4.8}},{"stat":"3BET SB vs LJ","reg":9.2,"min":6,"max":9.5,"vals":{"Camisa":8.9,"Danilo":7.4,"Dudu":7.7,"Paciraro":7.1,"Schmidt":6.3}},{"stat":"3BET SB vs HJ","reg":12,"min":9,"max":12.5,"vals":{"Camisa":12,"Danilo":11,"Dudu":8.9,"Paciraro":9.6,"Schmidt":11}},{"stat":"3BET SB vs CO","reg":15,"min":12,"max":16,"vals":{"Camisa":13,"Danilo":13,"Dudu":13,"Paciraro":12,"Schmidt":12}},{"stat":"3BET SB vs BTN","reg":19,"min":14,"max":20,"vals":{"Camisa":18,"Danilo":13,"Dudu":15,"Paciraro":14,"Schmidt":14}}]},{"name":"Herói BB","stats":[{"stat":"3BET BB vs UTG","reg":6,"min":4,"max":7,"vals":{"Camisa":5.3,"Danilo":5,"Dudu":6.7,"Paciraro":3.9,"Schmidt":6.5}},{"stat":"3BET BB vs MP","reg":6.4,"min":4,"max":8,"vals":{"Camisa":6.3,"Danilo":7.1,"Dudu":7.9,"Paciraro":3.6,"Schmidt":5.5}},{"stat":"3BET BB vs LJ","reg":7.4,"min":5,"max":8.5,"vals":{"Camisa":8.6,"Danilo":7.8,"Dudu":7.8,"Paciraro":4.7,"Schmidt":8.2}},{"stat":"3BET BB vs HJ","reg":10,"min":7,"max":12,"vals":{"Camisa":12,"Danilo":11,"Dudu":8.9,"Paciraro":7.5,"Schmidt":9.9}},{"stat":"3BET BB vs CO","reg":15,"min":11,"max":16,"vals":{"Camisa":16,"Danilo":12,"Dudu":11,"Paciraro":11,"Schmidt":12}},{"stat":"3BET BB vs BTN","reg":20,"min":12,"max":20,"vals":{"Camisa":19,"Danilo":17,"Dudu":12,"Paciraro":13,"Schmidt":15}},{"stat":"3BET BB vs SB","reg":20,"min":16,"max":22,"vals":{"Camisa":22,"Danilo":14,"Dudu":15,"Paciraro":20,"Schmidt":18}}]},{"name":"FOLD to 3BET — In Position (IP)","stats":[{"stat":"F3BET UTG (IP)","reg":48,"min":44,"max":56,"vals":{"Camisa":46,"Danilo":49,"Dudu":57,"Paciraro":41,"Schmidt":41}},{"stat":"F3BET MP (IP)","reg":50,"min":44,"max":56,"vals":{"Camisa":50,"Danilo":33,"Dudu":58,"Paciraro":41,"Schmidt":45}},{"stat":"F3BET LJ (IP)","reg":50,"min":44,"max":56,"vals":{"Camisa":41,"Danilo":38,"Dudu":59,"Paciraro":47,"Schmidt":46}},{"stat":"F3BET HJ (IP)","reg":51,"min":44,"max":56,"vals":{"Camisa":41,"Danilo":46,"Dudu":61,"Paciraro":53,"Schmidt":51}},{"stat":"F3BET CO (IP)","reg":55,"min":47,"max":62,"vals":{"Camisa":55,"Danilo":53,"Dudu":65,"Paciraro":52,"Schmidt":59}},{"stat":"F3BET BTN (IP)","reg":62,"min":52,"max":65,"vals":{"Camisa":58,"Danilo":64,"Dudu":69,"Paciraro":64,"Schmidt":53}},{"stat":"F3BET SB (IP)","reg":null,"min":null,"max":null,"vals":{"Camisa":null,"Danilo":null,"Dudu":null,"Paciraro":null,"Schmidt":null}}]},{"name":"FOLD to 3BET — Out of Position (OOP)","stats":[{"stat":"F3BET UTG (OOP)","reg":46,"min":40,"max":52,"vals":{"Camisa":45,"Danilo":39,"Dudu":60,"Paciraro":44,"Schmidt":36}},{"stat":"F3BET MP (OOP)","reg":47,"min":42,"max":54,"vals":{"Camisa":39,"Danilo":42,"Dudu":55,"Paciraro":39,"Schmidt":41}},{"stat":"F3BET LJ (OOP)","reg":48,"min":42,"max":55,"vals":{"Camisa":41,"Danilo":39,"Dudu":54,"Paciraro":43,"Schmidt":38}},{"stat":"F3BET HJ (OOP)","reg":49,"min":42,"max":56,"vals":{"Camisa":46,"Danilo":53,"Dudu":54,"Paciraro":51,"Schmidt":49}},{"stat":"F3BET CO (OOP)","reg":54,"min":44,"max":58,"vals":{"Camisa":57,"Danilo":52,"Dudu":56,"Paciraro":57,"Schmidt":46}},{"stat":"F3BET BTN (OOP)","reg":null,"min":null,"max":null,"vals":{"Camisa":null,"Danilo":null,"Dudu":null,"Paciraro":null,"Schmidt":null}},{"stat":"F3BET SB (OOP)","reg":66,"min":40,"max":65,"vals":{"Camisa":67,"Danilo":53,"Dudu":40,"Paciraro":59,"Schmidt":55},"obs":"depende muito do rfi sb"}]}]},{"name":"3Bet Resteal","groups":[{"name":"3BET RESTEAL — < 20 BBs · herói (bloco) vs quem abriu (coluna)","stats":[]},{"name":"Herói BB","stats":[{"stat":"3BET-RS BB vs EP (NAI)","reg":0.5,"min":null,"max":null,"vals":{"Camisa":1.8,"Danilo":0,"Dudu":0,"Paciraro":0,"Schmidt":0}},{"stat":"3BET-RS BB vs MP (NAI)","reg":0.4,"min":null,"max":null,"vals":{"Camisa":1.3,"Danilo":0.3,"Dudu":0.5,"Paciraro":0,"Schmidt":0.8}},{"stat":"3BET-RS BB vs HJ (NAI)","reg":0.8,"min":null,"max":null,"vals":{"Camisa":1.6,"Danilo":0.4,"Dudu":0.5,"Paciraro":0.8,"Schmidt":2.6}},{"stat":"3BET-RS BB vs CO (NAI)","reg":1,"min":null,"max":null,"vals":{"Camisa":1.3,"Danilo":0.9,"Dudu":1.4,"Paciraro":1.3,"Schmidt":0.6}},{"stat":"3BET-RS BB vs BTN (NAI)","reg":1.5,"min":null,"max":null,"vals":{"Camisa":3.3,"Danilo":0,"Dudu":0.5,"Paciraro":1.4,"Schmidt":0.6}},{"stat":"3BET-RS BB vs SB (NAI)","reg":2.8,"min":null,"max":null,"vals":{"Camisa":7.2,"Danilo":1.2,"Dudu":0.7,"Paciraro":0.8,"Schmidt":3.1}},{"stat":"3BET-RS BB vs EP (AI)","reg":9.3,"min":6,"max":10,"vals":{"Camisa":5.1,"Danilo":4.9,"Dudu":8.2,"Paciraro":5.7,"Schmidt":12}},{"stat":"3BET-RS BB vs MP (AI)","reg":10,"min":7,"max":11,"vals":{"Camisa":6.4,"Danilo":11,"Dudu":12,"Paciraro":8.2,"Schmidt":12}},{"stat":"3BET-RS BB vs HJ (AI)","reg":13,"min":11,"max":15,"vals":{"Camisa":12,"Danilo":14,"Dudu":12,"Paciraro":15,"Schmidt":11}},{"stat":"3BET-RS BB vs CO (AI)","reg":18,"min":16,"max":21,"vals":{"Camisa":16,"Danilo":17,"Dudu":19,"Paciraro":17,"Schmidt":17}},{"stat":"3BET-RS BB vs BTN (AI)","reg":23,"min":20,"max":26,"vals":{"Camisa":18,"Danilo":19,"Dudu":20,"Paciraro":18,"Schmidt":23}},{"stat":"3BET-RS BB vs SB (AI)","reg":26,"min":22,"max":30,"vals":{"Camisa":17,"Danilo":22,"Dudu":19,"Paciraro":29,"Schmidt":32}}]},{"name":"Herói SB","stats":[{"stat":"3BET-RS SB vs EP (NAI)","reg":0.4,"min":null,"max":null,"vals":{"Camisa":0.5,"Danilo":0,"Dudu":0,"Paciraro":0.8,"Schmidt":0}},{"stat":"3BET-RS SB vs MP (NAI)","reg":0.4,"min":null,"max":null,"vals":{"Camisa":0.8,"Danilo":0,"Dudu":0.1,"Paciraro":0.4,"Schmidt":0.4}},{"stat":"3BET-RS SB vs HJ (NAI)","reg":0.6,"min":null,"max":null,"vals":{"Camisa":0.2,"Danilo":0,"Dudu":0.2,"Paciraro":0.3,"Schmidt":1.7}},{"stat":"3BET-RS SB vs CO (NAI)","reg":0.7,"min":null,"max":null,"vals":{"Camisa":0.8,"Danilo":0.3,"Dudu":0.6,"Paciraro":0.3,"Schmidt":2.7}},{"stat":"3BET-RS SB vs BTN (NAI)","reg":1,"min":null,"max":null,"vals":{"Camisa":0.7,"Danilo":0.7,"Dudu":0.2,"Paciraro":0.5,"Schmidt":2.7}},{"stat":"3BET-RS SB vs EP (AI)","reg":10,"min":6,"max":10,"vals":{"Camisa":6.8,"Danilo":7.5,"Dudu":6.5,"Paciraro":5.6,"Schmidt":4.8}},{"stat":"3BET-RS SB vs MP (AI)","reg":12,"min":7.5,"max":12,"vals":{"Camisa":10,"Danilo":12,"Dudu":12,"Paciraro":11,"Schmidt":7.5}},{"stat":"3BET-RS SB vs HJ (AI)","reg":15,"min":11,"max":16,"vals":{"Camisa":14,"Danilo":11,"Dudu":14,"Paciraro":13,"Schmidt":17}},{"stat":"3BET-RS SB vs CO (AI)","reg":18,"min":15,"max":20,"vals":{"Camisa":15,"Danilo":18,"Dudu":18,"Paciraro":15,"Schmidt":15}},{"stat":"3BET-RS SB vs BTN (AI)","reg":23,"min":18,"max":24,"vals":{"Camisa":23,"Danilo":18,"Dudu":20,"Paciraro":17,"Schmidt":24}}]},{"name":"Herói BTN","stats":[{"stat":"3BET-RS BTN vs EP (NAI)","reg":0.6,"min":null,"max":null,"vals":{"Camisa":0.4,"Danilo":0,"Dudu":1.3,"Paciraro":0,"Schmidt":0}},{"stat":"3BET-RS BTN vs MP (NAI)","reg":0.8,"min":null,"max":null,"vals":{"Camisa":0.8,"Danilo":0.2,"Dudu":0.8,"Paciraro":0.3,"Schmidt":0.9}},{"stat":"3BET-RS BTN vs HJ (NAI)","reg":0.9,"min":null,"max":null,"vals":{"Camisa":1.8,"Danilo":0.3,"Dudu":0.5,"Paciraro":0,"Schmidt":2.7}},{"stat":"3BET-RS BTN vs CO (NAI)","reg":1.2,"min":null,"max":null,"vals":{"Camisa":0.3,"Danilo":0.6,"Dudu":1.4,"Paciraro":0.3,"Schmidt":1.9}},{"stat":"3BET-RS BTN vs EP (AI)","reg":9.1,"min":6.5,"max":11,"vals":{"Camisa":5.3,"Danilo":8.4,"Dudu":11,"Paciraro":8.5,"Schmidt":9.5}},{"stat":"3BET-RS BTN vs MP (AI)","reg":11,"min":7.5,"max":11,"vals":{"Camisa":7.4,"Danilo":9.4,"Dudu":8.6,"Paciraro":6.9,"Schmidt":11}},{"stat":"3BET-RS BTN vs HJ (AI)","reg":13,"min":9,"max":14,"vals":{"Camisa":9.3,"Danilo":14,"Dudu":10,"Paciraro":12,"Schmidt":10}},{"stat":"3BET-RS BTN vs CO (AI)","reg":16,"min":12,"max":17,"vals":{"Camisa":15,"Danilo":13,"Dudu":12,"Paciraro":14,"Schmidt":21}}]},{"name":"Herói CO","stats":[{"stat":"3BET-RS CO vs EP (NAI)","reg":0.6,"min":null,"max":null,"vals":{"Camisa":0.5,"Danilo":0.8,"Dudu":0.7,"Paciraro":0,"Schmidt":1.1}},{"stat":"3BET-RS CO vs MP (NAI)","reg":0.9,"min":null,"max":null,"vals":{"Camisa":0.4,"Danilo":0.4,"Dudu":1.1,"Paciraro":0.1,"Schmidt":1.4}},{"stat":"3BET-RS CO vs HJ (NAI)","reg":0.9,"min":null,"max":null,"vals":{"Camisa":0.5,"Danilo":0.8,"Dudu":0.8,"Paciraro":0.5,"Schmidt":1.3}},{"stat":"3BET-RS CO vs EP (AI)","reg":8.6,"min":6,"max":10,"vals":{"Camisa":3.5,"Danilo":5.1,"Dudu":11,"Paciraro":6.6,"Schmidt":5.3}},{"stat":"3BET-RS CO vs MP (AI)","reg":10,"min":7.5,"max":11,"vals":{"Camisa":8.8,"Danilo":10,"Dudu":9.9,"Paciraro":10,"Schmidt":8.4}},{"stat":"3BET-RS CO vs HJ (AI)","reg":12,"min":10,"max":14,"vals":{"Camisa":9.6,"Danilo":11,"Dudu":13,"Paciraro":11,"Schmidt":12}}]},{"name":"Herói HJ","stats":[{"stat":"3BET-RS HJ vs EP (NAI)","reg":0.7,"min":null,"max":null,"vals":{"Camisa":0.3,"Danilo":0,"Dudu":0.7,"Paciraro":0,"Schmidt":0}},{"stat":"3BET-RS HJ vs MP (NAI)","reg":0.8,"min":null,"max":null,"vals":{"Camisa":0.9,"Danilo":0,"Dudu":0.5,"Paciraro":0.4,"Schmidt":1}},{"stat":"3BET-RS HJ vs EP (AI)","reg":8.2,"min":6.5,"max":9,"vals":{"Camisa":7.9,"Danilo":8.1,"Dudu":6.9,"Paciraro":4.7,"Schmidt":7.6}},{"stat":"3BET-RS HJ vs MP (AI)","reg":null,"min":null,"max":null,"vals":{"Camisa":null,"Danilo":null,"Dudu":null,"Paciraro":null,"Schmidt":null},"obs":"sem dado"}]},{"name":"Herói MP","stats":[{"stat":"3BET-RS MP vs EP (NAI)","reg":0.7,"min":null,"max":null,"vals":{"Camisa":1.4,"Danilo":0.3,"Dudu":0.3,"Paciraro":0.2,"Schmidt":0.9}},{"stat":"3BET-RS MP vs MP (NAI)","reg":0.8,"min":null,"max":null,"vals":{"Camisa":1.8,"Danilo":0.4,"Dudu":1,"Paciraro":0,"Schmidt":1.6}},{"stat":"3BET-RS MP vs EP (AI)","reg":8.1,"min":6.5,"max":9,"vals":{"Camisa":4.9,"Danilo":8.3,"Dudu":7.7,"Paciraro":5.5,"Schmidt":7.7}},{"stat":"3BET-RS MP vs MP (AI)","reg":4.6,"min":4.6,"max":9.1,"vals":{"Camisa":null,"Danilo":null,"Dudu":null,"Paciraro":9.1,"Schmidt":null}}]},{"name":"Herói EP","stats":[{"stat":"3BET-RS EP vs EP (NAI)","reg":0.8,"min":null,"max":null,"vals":{"Camisa":0,"Danilo":null,"Dudu":null,"Paciraro":0,"Schmidt":null}},{"stat":"3BET-RS EP vs EP (AI)","reg":5,"min":null,"max":null,"vals":{"Camisa":null,"Danilo":null,"Dudu":null,"Paciraro":null,"Schmidt":null}}]}]},{"name":"BB Defense","groups":[{"name":"SMALL BLIND — ALL","stats":[{"stat":"TOTAL · FOLD","reg":77,"min":74,"max":80,"vals":{"Camisa":74,"Danilo":79,"Dudu":80,"Paciraro":79,"Schmidt":68}},{"stat":"TOTAL · CALL","reg":10,"min":10,"max":14,"vals":{"Camisa":14,"Danilo":11,"Dudu":10,"Paciraro":12,"Schmidt":22}},{"stat":"TOTAL · 3B NAI","reg":7.1,"min":5,"max":7.5,"vals":{"Camisa":6,"Danilo":4.6,"Dudu":4.7,"Paciraro":5.1,"Schmidt":5.3}},{"stat":"TOTAL · 3B AI","reg":6,"min":5.5,"max":7.5,"vals":{"Camisa":6.1,"Danilo":6.4,"Dudu":5.7,"Paciraro":4.6,"Schmidt":4.8}},{"stat":"BTN · FOLD","reg":72,"min":70,"max":78,"vals":{"Camisa":70,"Danilo":76,"Dudu":76,"Paciraro":75,"Schmidt":66}},{"stat":"BTN · CALL","reg":9.2,"min":9,"max":13,"vals":{"Camisa":12,"Danilo":12,"Dudu":8.9,"Paciraro":11,"Schmidt":21}},{"stat":"BTN · 3B NAI","reg":11,"min":7,"max":13,"vals":{"Camisa":9.3,"Danilo":5.4,"Dudu":7.7,"Paciraro":7.5,"Schmidt":6.4}},{"stat":"BTN · 3B AI","reg":8.4,"min":7.5,"max":10,"vals":{"Camisa":9.5,"Danilo":7.9,"Dudu":8.1,"Paciraro":6.8,"Schmidt":7.8}},{"stat":"CO · FOLD","reg":76,"min":72,"max":79,"vals":{"Camisa":75,"Danilo":78,"Dudu":78,"Paciraro":79,"Schmidt":68}},{"stat":"CO · CALL","reg":9.3,"min":8.5,"max":12.5,"vals":{"Camisa":13,"Danilo":9.6,"Dudu":9.6,"Paciraro":9.4,"Schmidt":20}},{"stat":"CO · 3B NAI","reg":8.5,"min":6.5,"max":11,"vals":{"Camisa":6.2,"Danilo":5,"Dudu":5.8,"Paciraro":6.6,"Schmidt":7.9}},{"stat":"CO · 3B AI","reg":7,"min":5.5,"max":8.5,"vals":{"Camisa":6.7,"Danilo":8.4,"Dudu":7,"Paciraro":5.2,"Schmidt":4.8}},{"stat":"MP · FOLD","reg":80,"min":76,"max":82,"vals":{"Camisa":76,"Danilo":80,"Dudu":82,"Paciraro":80,"Schmidt":69}},{"stat":"MP · CALL","reg":11,"min":10,"max":15,"vals":{"Camisa":15,"Danilo":12,"Dudu":11,"Paciraro":12,"Schmidt":23}},{"stat":"MP · 3B NAI","reg":5.2,"min":4,"max":6,"vals":{"Camisa":4.8,"Danilo":4.1,"Dudu":3.2,"Paciraro":3.8,"Schmidt":4.2}},{"stat":"MP · 3B AI","reg":4.7,"min":4,"max":6,"vals":{"Camisa":4.8,"Danilo":5.2,"Dudu":4.7,"Paciraro":3.9,"Schmidt":3.7}},{"stat":"EP · FOLD","reg":82,"min":78,"max":84,"vals":{"Camisa":78,"Danilo":83,"Dudu":84,"Paciraro":82,"Schmidt":70}},{"stat":"EP · CALL","reg":12,"min":10,"max":16,"vals":{"Camisa":16,"Danilo":11,"Dudu":10,"Paciraro":15,"Schmidt":26}},{"stat":"EP · 3B NAI","reg":3.6,"min":2.5,"max":4,"vals":{"Camisa":3.1,"Danilo":3.4,"Dudu":3.2,"Paciraro":2.9,"Schmidt":1.8}},{"stat":"EP · 3B AI","reg":3.4,"min":2.5,"max":4,"vals":{"Camisa":2.2,"Danilo":2.8,"Dudu":2.5,"Paciraro":1.7,"Schmidt":2.6}}]},{"name":"SMALL BLIND — < 20 bb","stats":[{"stat":"TOTAL · FOLD","reg":80,"min":null,"max":null,"vals":{"Camisa":81,"Danilo":83,"Dudu":82,"Paciraro":84,"Schmidt":71}},{"stat":"TOTAL · CALL","reg":3.5,"min":null,"max":null,"vals":{"Camisa":5.5,"Danilo":3.4,"Dudu":3.4,"Paciraro":3.3,"Schmidt":15}},{"stat":"TOTAL · 3B NAI","reg":0.6,"min":null,"max":null,"vals":{"Camisa":0.7,"Danilo":0.2,"Dudu":0.3,"Paciraro":0.4,"Schmidt":1.6}},{"stat":"TOTAL · 3B AI","reg":16,"min":null,"max":null,"vals":{"Camisa":14,"Danilo":14,"Dudu":15,"Paciraro":13,"Schmidt":14}},{"stat":"BTN · FOLD","reg":74,"min":null,"max":null,"vals":{"Camisa":76,"Danilo":81,"Dudu":78,"Paciraro":81,"Schmidt":67}},{"stat":"BTN · CALL","reg":2.5,"min":null,"max":null,"vals":{"Camisa":2.7,"Danilo":2.2,"Dudu":2.9,"Paciraro":2,"Schmidt":9.4}},{"stat":"BTN · 3B NAI","reg":1,"min":null,"max":null,"vals":{"Camisa":0.7,"Danilo":0.7,"Dudu":0.2,"Paciraro":0.5,"Schmidt":2.7}},{"stat":"BTN · 3B AI","reg":23,"min":null,"max":null,"vals":{"Camisa":23,"Danilo":18,"Dudu":20,"Paciraro":17,"Schmidt":24}},{"stat":"CO · FOLD","reg":79,"min":null,"max":null,"vals":{"Camisa":79,"Danilo":79,"Dudu":79,"Paciraro":82,"Schmidt":65}},{"stat":"CO · CALL","reg":2.8,"min":null,"max":null,"vals":{"Camisa":4.6,"Danilo":2.6,"Dudu":3,"Paciraro":2.5,"Schmidt":18}},{"stat":"CO · 3B NAI","reg":0.7,"min":null,"max":null,"vals":{"Camisa":0.8,"Danilo":0.3,"Dudu":0.6,"Paciraro":0.3,"Schmidt":2.7}},{"stat":"CO · 3B AI","reg":18,"min":null,"max":null,"vals":{"Camisa":15,"Danilo":18,"Dudu":18,"Paciraro":15,"Schmidt":15}},{"stat":"MP · FOLD","reg":83,"min":null,"max":null,"vals":{"Camisa":83,"Danilo":86,"Dudu":85,"Paciraro":85,"Schmidt":74}},{"stat":"MP · CALL","reg":4,"min":null,"max":null,"vals":{"Camisa":6.6,"Danilo":4.6,"Dudu":3.8,"Paciraro":4.2,"Schmidt":16}},{"stat":"MP · 3B NAI","reg":0.5,"min":null,"max":null,"vals":{"Camisa":0.6,"Danilo":0,"Dudu":0.2,"Paciraro":0.4,"Schmidt":0.9}},{"stat":"MP · 3B AI","reg":13,"min":null,"max":null,"vals":{"Camisa":11,"Danilo":12,"Dudu":13,"Paciraro":11,"Schmidt":11}},{"stat":"EP · FOLD","reg":85,"min":null,"max":null,"vals":{"Camisa":84,"Danilo":90,"Dudu":89,"Paciraro":93,"Schmidt":77}},{"stat":"EP · CALL","reg":5,"min":null,"max":null,"vals":{"Camisa":8.3,"Danilo":2.3,"Dudu":3.7,"Paciraro":3.2,"Schmidt":20}},{"stat":"EP · 3B NAI","reg":0.4,"min":null,"max":null,"vals":{"Camisa":0.5,"Danilo":0,"Dudu":0,"Paciraro":0.8,"Schmidt":0}},{"stat":"EP · 3B AI","reg":10,"min":null,"max":null,"vals":{"Camisa":6.8,"Danilo":7.5,"Dudu":6.5,"Paciraro":5.6,"Schmidt":4.8}}]},{"name":"SMALL BLIND — 20 - 50 bb","stats":[{"stat":"TOTAL · FOLD","reg":77,"min":null,"max":null,"vals":{"Camisa":75,"Danilo":78,"Dudu":81,"Paciraro":79,"Schmidt":68}},{"stat":"TOTAL · CALL","reg":10,"min":null,"max":null,"vals":{"Camisa":14,"Danilo":12,"Dudu":10,"Paciraro":12,"Schmidt":22}},{"stat":"TOTAL · 3B NAI","reg":6.8,"min":null,"max":null,"vals":{"Camisa":6.4,"Danilo":4.9,"Dudu":4.8,"Paciraro":5.3,"Schmidt":5.1}},{"stat":"TOTAL · 3B AI","reg":5.9,"min":null,"max":null,"vals":{"Camisa":5.1,"Danilo":5.5,"Dudu":4.7,"Paciraro":4.1,"Schmidt":5.3}},{"stat":"BTN · FOLD","reg":72,"min":null,"max":null,"vals":{"Camisa":71,"Danilo":76,"Dudu":78,"Paciraro":75,"Schmidt":68}},{"stat":"BTN · CALL","reg":8.9,"min":null,"max":null,"vals":{"Camisa":12,"Danilo":12,"Dudu":7.9,"Paciraro":11,"Schmidt":18}},{"stat":"BTN · 3B NAI","reg":10,"min":null,"max":null,"vals":{"Camisa":9.5,"Danilo":5.9,"Dudu":6.7,"Paciraro":7.1,"Schmidt":5.6}},{"stat":"BTN · 3B AI","reg":8.7,"min":null,"max":null,"vals":{"Camisa":8.7,"Danilo":6.9,"Dudu":8.2,"Paciraro":7,"Schmidt":8.9}},{"stat":"CO · FOLD","reg":76,"min":null,"max":null,"vals":{"Camisa":75,"Danilo":79,"Dudu":80,"Paciraro":79,"Schmidt":70}},{"stat":"CO · CALL","reg":9.3,"min":null,"max":null,"vals":{"Camisa":14,"Danilo":9.6,"Dudu":9.1,"Paciraro":10,"Schmidt":18}},{"stat":"CO · 3B NAI","reg":8.1,"min":null,"max":null,"vals":{"Camisa":6,"Danilo":5.1,"Dudu":5.6,"Paciraro":6.8,"Schmidt":6.8}},{"stat":"CO · 3B AI","reg":7,"min":null,"max":null,"vals":{"Camisa":5.5,"Danilo":6.9,"Dudu":5.5,"Paciraro":4.1,"Schmidt":4.9}},{"stat":"MP · FOLD","reg":80,"min":null,"max":null,"vals":{"Camisa":76,"Danilo":79,"Dudu":82,"Paciraro":80,"Schmidt":68}},{"stat":"MP · CALL","reg":11,"min":null,"max":null,"vals":{"Camisa":15,"Danilo":13,"Dudu":11,"Paciraro":13,"Schmidt":23}},{"stat":"MP · 3B NAI","reg":5,"min":null,"max":null,"vals":{"Camisa":5.4,"Danilo":4.6,"Dudu":4,"Paciraro":4.2,"Schmidt":4.8}},{"stat":"MP · 3B AI","reg":4.4,"min":null,"max":null,"vals":{"Camisa":3.8,"Danilo":4.8,"Dudu":3.2,"Paciraro":3.1,"Schmidt":3.8}},{"stat":"EP · FOLD","reg":82,"min":null,"max":null,"vals":{"Camisa":81,"Danilo":82,"Dudu":84,"Paciraro":81,"Schmidt":68}},{"stat":"EP · CALL","reg":12,"min":null,"max":null,"vals":{"Camisa":15,"Danilo":12,"Dudu":11,"Paciraro":15,"Schmidt":28}},{"stat":"EP · 3B NAI","reg":3.5,"min":null,"max":null,"vals":{"Camisa":3.5,"Danilo":3.7,"Dudu":2.6,"Paciraro":3.2,"Schmidt":1.2}},{"stat":"EP · 3B AI","reg":3.3,"min":null,"max":null,"vals":{"Camisa":1.1,"Danilo":2.3,"Dudu":2.2,"Paciraro":1.5,"Schmidt":4.2}}]},{"name":"SMALL BLIND — > 50 bb","stats":[{"stat":"TOTAL · FOLD","reg":75,"min":null,"max":null,"vals":{"Camisa":70,"Danilo":76,"Dudu":77,"Paciraro":76,"Schmidt":68}},{"stat":"TOTAL · CALL","reg":14,"min":null,"max":null,"vals":{"Camisa":21,"Danilo":17,"Dudu":15,"Paciraro":16,"Schmidt":25}},{"stat":"TOTAL · 3B NAI","reg":11,"min":null,"max":null,"vals":{"Camisa":9.5,"Danilo":7.2,"Dudu":7.8,"Paciraro":7.4,"Schmidt":6.7}},{"stat":"TOTAL · 3B AI","reg":0.3,"min":null,"max":null,"vals":{"Camisa":0.1,"Danilo":0.4,"Dudu":0,"Paciraro":0.1,"Schmidt":0.4}},{"stat":"BTN · FOLD","reg":70,"min":null,"max":null,"vals":{"Camisa":65,"Danilo":72,"Dudu":73,"Paciraro":72,"Schmidt":65}},{"stat":"BTN · CALL","reg":13,"min":null,"max":null,"vals":{"Camisa":20,"Danilo":19,"Dudu":13,"Paciraro":16,"Schmidt":26}},{"stat":"BTN · 3B NAI","reg":16,"min":null,"max":null,"vals":{"Camisa":15,"Danilo":8,"Dudu":13,"Paciraro":12,"Schmidt":8.3}},{"stat":"BTN · 3B AI","reg":0.4,"min":null,"max":null,"vals":{"Camisa":0.1,"Danilo":0.7,"Dudu":0,"Paciraro":0,"Schmidt":0.5}},{"stat":"CO · FOLD","reg":74,"min":null,"max":null,"vals":{"Camisa":72,"Danilo":75,"Dudu":75,"Paciraro":78,"Schmidt":66}},{"stat":"CO · CALL","reg":13,"min":null,"max":null,"vals":{"Camisa":17,"Danilo":15,"Dudu":15,"Paciraro":12,"Schmidt":24}},{"stat":"CO · 3B NAI","reg":13,"min":null,"max":null,"vals":{"Camisa":10,"Danilo":8.8,"Dudu":9.8,"Paciraro":9.8,"Schmidt":11}},{"stat":"CO · 3B AI","reg":0.3,"min":null,"max":null,"vals":{"Camisa":0.3,"Danilo":0.3,"Dudu":0,"Paciraro":0.2,"Schmidt":0.5}},{"stat":"MP · FOLD","reg":78,"min":null,"max":null,"vals":{"Camisa":71,"Danilo":77,"Dudu":79,"Paciraro":78,"Schmidt":69}},{"stat":"MP · CALL","reg":14,"min":null,"max":null,"vals":{"Camisa":22,"Danilo":17,"Dudu":16,"Paciraro":17,"Schmidt":26}},{"stat":"MP · 3B NAI","reg":8,"min":null,"max":null,"vals":{"Camisa":7.2,"Danilo":6.4,"Dudu":4.4,"Paciraro":5.2,"Schmidt":4.8}},{"stat":"MP · 3B AI","reg":0.3,"min":null,"max":null,"vals":{"Camisa":0.1,"Danilo":0.4,"Dudu":0.1,"Paciraro":0.1,"Schmidt":0.3}},{"stat":"EP · FOLD","reg":80,"min":null,"max":null,"vals":{"Camisa":71,"Danilo":80,"Dudu":79,"Paciraro":77,"Schmidt":71}},{"stat":"EP · CALL","reg":15,"min":null,"max":null,"vals":{"Camisa":24,"Danilo":15,"Dudu":14,"Paciraro":20,"Schmidt":25}},{"stat":"EP · 3B NAI","reg":5.2,"min":null,"max":null,"vals":{"Camisa":4.5,"Danilo":5.2,"Dudu":6.1,"Paciraro":2.9,"Schmidt":2.9}},{"stat":"EP · 3B AI","reg":0.3,"min":null,"max":null,"vals":{"Camisa":0,"Danilo":0,"Dudu":0,"Paciraro":0,"Schmidt":0.4}}]},{"name":"BIG BLIND — ALL","stats":[{"stat":"TOTAL · FOLD","reg":35,"min":30,"max":40,"vals":{"Camisa":31,"Danilo":40,"Dudu":46,"Paciraro":41,"Schmidt":25}},{"stat":"TOTAL · CALL","reg":53,"min":48,"max":60,"vals":{"Camisa":55,"Danilo":49,"Dudu":44,"Paciraro":50,"Schmidt":64}},{"stat":"TOTAL · 3B NAI","reg":6.7,"min":4.5,"max":8,"vals":{"Camisa":8.8,"Danilo":5.2,"Dudu":4.1,"Paciraro":4.2,"Schmidt":5.5}},{"stat":"TOTAL · 3B AI","reg":6.2,"min":4.5,"max":8,"vals":{"Camisa":4.8,"Danilo":6.3,"Dudu":6,"Paciraro":5.3,"Schmidt":5.7}},{"stat":"BTN · FOLD","reg":28,"min":23,"max":33,"vals":{"Camisa":26,"Danilo":32,"Dudu":42,"Paciraro":35,"Schmidt":23}},{"stat":"BTN · CALL","reg":53,"min":48,"max":62,"vals":{"Camisa":55,"Danilo":51,"Dudu":45,"Paciraro":51,"Schmidt":63}},{"stat":"BTN · 3B NAI","reg":11,"min":6,"max":13,"vals":{"Camisa":12,"Danilo":8.9,"Dudu":4.6,"Paciraro":6.2,"Schmidt":7.6}},{"stat":"BTN · 3B AI","reg":9,"min":7.5,"max":10.5,"vals":{"Camisa":7.2,"Danilo":8.7,"Dudu":7.9,"Paciraro":7.3,"Schmidt":6.9}},{"stat":"CO · FOLD","reg":32,"min":27,"max":37,"vals":{"Camisa":26,"Danilo":43,"Dudu":44,"Paciraro":40,"Schmidt":23}},{"stat":"CO · CALL","reg":53,"min":45,"max":61,"vals":{"Camisa":58,"Danilo":45,"Dudu":45,"Paciraro":49,"Schmidt":65}},{"stat":"CO · 3B NAI","reg":7.6,"min":5.5,"max":9,"vals":{"Camisa":9.9,"Danilo":4.8,"Dudu":4.4,"Paciraro":5,"Schmidt":6.5}},{"stat":"CO · 3B AI","reg":7.2,"min":5.5,"max":8.5,"vals":{"Camisa":6.3,"Danilo":7,"Dudu":7,"Paciraro":5.8,"Schmidt":5.7}},{"stat":"MP · FOLD","reg":39,"min":32,"max":46,"vals":{"Camisa":35,"Danilo":42,"Dudu":49,"Paciraro":44,"Schmidt":27}},{"stat":"MP · CALL","reg":53,"min":48,"max":58,"vals":{"Camisa":56,"Danilo":49,"Dudu":43,"Paciraro":51,"Schmidt":65}},{"stat":"MP · 3B NAI","reg":3.8,"min":2.5,"max":4.5,"vals":{"Camisa":6,"Danilo":3.5,"Dudu":2.9,"Paciraro":1.8,"Schmidt":3.9}},{"stat":"MP · 3B AI","reg":4.3,"min":3.5,"max":5.5,"vals":{"Camisa":3.4,"Danilo":5.3,"Dudu":5.4,"Paciraro":3.5,"Schmidt":4.2}},{"stat":"EP · FOLD","reg":42,"min":36,"max":48,"vals":{"Camisa":35,"Danilo":47,"Dudu":45,"Paciraro":44,"Schmidt":29}},{"stat":"EP · CALL","reg":52,"min":46,"max":58,"vals":{"Camisa":60,"Danilo":48,"Dudu":48,"Paciraro":53,"Schmidt":64}},{"stat":"EP · 3B NAI","reg":2.8,"min":2,"max":4,"vals":{"Camisa":3.6,"Danilo":3.2,"Dudu":3,"Paciraro":2.1,"Schmidt":1.8}},{"stat":"EP · 3B AI","reg":3.2,"min":2,"max":4,"vals":{"Camisa":1.7,"Danilo":1.8,"Dudu":3.8,"Paciraro":2.1,"Schmidt":4.7}}]},{"name":"BIG BLIND — < 20 bb","stats":[{"stat":"TOTAL · FOLD","reg":39,"min":null,"max":null,"vals":{"Camisa":41,"Danilo":47,"Dudu":53,"Paciraro":41,"Schmidt":27}},{"stat":"TOTAL · CALL","reg":45,"min":null,"max":null,"vals":{"Camisa":45,"Danilo":39,"Dudu":32,"Paciraro":45,"Schmidt":55}},{"stat":"TOTAL · 3B NAI","reg":1,"min":null,"max":null,"vals":{"Camisa":2.3,"Danilo":0.4,"Dudu":0.6,"Paciraro":0.7,"Schmidt":1.1}},{"stat":"TOTAL · 3B AI","reg":16,"min":null,"max":null,"vals":{"Camisa":12,"Danilo":15,"Dudu":15,"Paciraro":14,"Schmidt":16}},{"stat":"BTN · FOLD","reg":33,"min":null,"max":null,"vals":{"Camisa":36,"Danilo":42,"Dudu":52,"Paciraro":36,"Schmidt":30}},{"stat":"BTN · CALL","reg":43,"min":null,"max":null,"vals":{"Camisa":43,"Danilo":40,"Dudu":28,"Paciraro":45,"Schmidt":48}},{"stat":"BTN · 3B NAI","reg":1.5,"min":null,"max":null,"vals":{"Camisa":3.3,"Danilo":0,"Dudu":0.5,"Paciraro":1.4,"Schmidt":0.6}},{"stat":"BTN · 3B AI","reg":23,"min":null,"max":null,"vals":{"Camisa":18,"Danilo":19,"Dudu":20,"Paciraro":18,"Schmidt":23}},{"stat":"CO · FOLD","reg":37,"min":null,"max":null,"vals":{"Camisa":37,"Danilo":48,"Dudu":48,"Paciraro":37,"Schmidt":25}},{"stat":"CO · CALL","reg":45,"min":null,"max":null,"vals":{"Camisa":47,"Danilo":35,"Dudu":32,"Paciraro":46,"Schmidt":57}},{"stat":"CO · 3B NAI","reg":1,"min":null,"max":null,"vals":{"Camisa":1.3,"Danilo":0.9,"Dudu":1.4,"Paciraro":1.3,"Schmidt":0.6}},{"stat":"CO · 3B AI","reg":18,"min":null,"max":null,"vals":{"Camisa":16,"Danilo":17,"Dudu":19,"Paciraro":17,"Schmidt":17}},{"stat":"MP · FOLD","reg":42,"min":null,"max":null,"vals":{"Camisa":44,"Danilo":48,"Dudu":56,"Paciraro":45,"Schmidt":29}},{"stat":"MP · CALL","reg":46,"min":null,"max":null,"vals":{"Camisa":46,"Danilo":40,"Dudu":32,"Paciraro":45,"Schmidt":57}},{"stat":"MP · 3B NAI","reg":0.6,"min":null,"max":null,"vals":{"Camisa":1.4,"Danilo":0.4,"Dudu":0.5,"Paciraro":0.3,"Schmidt":1.4}},{"stat":"MP · 3B AI","reg":12,"min":null,"max":null,"vals":{"Camisa":8.6,"Danilo":12,"Dudu":12,"Paciraro":10,"Schmidt":12}},{"stat":"EP · FOLD","reg":44,"min":null,"max":null,"vals":{"Camisa":41,"Danilo":49,"Dudu":48,"Paciraro":42,"Schmidt":19}},{"stat":"EP · CALL","reg":46,"min":null,"max":null,"vals":{"Camisa":52,"Danilo":46,"Dudu":44,"Paciraro":53,"Schmidt":68}},{"stat":"EP · 3B NAI","reg":0.5,"min":null,"max":null,"vals":{"Camisa":1.8,"Danilo":0,"Dudu":0,"Paciraro":0,"Schmidt":0}},{"stat":"EP · 3B AI","reg":9.3,"min":null,"max":null,"vals":{"Camisa":5.1,"Danilo":4.9,"Dudu":8.2,"Paciraro":5.7,"Schmidt":12}}]},{"name":"BIG BLIND — 20 - 50 bb","stats":[{"stat":"TOTAL · FOLD","reg":34,"min":null,"max":null,"vals":{"Camisa":30,"Danilo":37,"Dudu":45,"Paciraro":40,"Schmidt":25}},{"stat":"TOTAL · CALL","reg":53,"min":null,"max":null,"vals":{"Camisa":55,"Danilo":51,"Dudu":46,"Paciraro":50,"Schmidt":64}},{"stat":"TOTAL · 3B NAI","reg":7.4,"min":null,"max":null,"vals":{"Camisa":12,"Danilo":7.2,"Dudu":4.7,"Paciraro":5.2,"Schmidt":6.2}},{"stat":"TOTAL · 3B AI","reg":5.4,"min":null,"max":null,"vals":{"Camisa":3.2,"Danilo":4.7,"Dudu":4.7,"Paciraro":4.3,"Schmidt":5.5}},{"stat":"BTN · FOLD","reg":27,"min":null,"max":null,"vals":{"Camisa":26,"Danilo":29,"Dudu":43,"Paciraro":34,"Schmidt":21}},{"stat":"BTN · CALL","reg":53,"min":null,"max":null,"vals":{"Camisa":54,"Danilo":51,"Dudu":45,"Paciraro":52,"Schmidt":63}},{"stat":"BTN · 3B NAI","reg":12,"min":null,"max":null,"vals":{"Camisa":15,"Danilo":12,"Dudu":5.4,"Paciraro":7.2,"Schmidt":8.6}},{"stat":"BTN · 3B AI","reg":8.5,"min":null,"max":null,"vals":{"Camisa":5.3,"Danilo":7.9,"Dudu":6.8,"Paciraro":7.1,"Schmidt":7.2}},{"stat":"CO · FOLD","reg":31,"min":null,"max":null,"vals":{"Camisa":23,"Danilo":40,"Dudu":43,"Paciraro":41,"Schmidt":23}},{"stat":"CO · CALL","reg":54,"min":null,"max":null,"vals":{"Camisa":59,"Danilo":49,"Dudu":48,"Paciraro":50,"Schmidt":63}},{"stat":"CO · 3B NAI","reg":8.5,"min":null,"max":null,"vals":{"Camisa":14,"Danilo":6.9,"Dudu":3.9,"Paciraro":6,"Schmidt":9.3}},{"stat":"CO · 3B AI","reg":6.2,"min":null,"max":null,"vals":{"Camisa":4,"Danilo":4.5,"Dudu":4.8,"Paciraro":3.4,"Schmidt":4.9}},{"stat":"MP · FOLD","reg":39,"min":null,"max":null,"vals":{"Camisa":33,"Danilo":39,"Dudu":48,"Paciraro":44,"Schmidt":26}},{"stat":"MP · CALL","reg":54,"min":null,"max":null,"vals":{"Camisa":56,"Danilo":53,"Dudu":45,"Paciraro":51,"Schmidt":66}},{"stat":"MP · 3B NAI","reg":4.3,"min":null,"max":null,"vals":{"Camisa":9,"Danilo":5.2,"Dudu":3.5,"Paciraro":2.7,"Schmidt":4.2}},{"stat":"MP · 3B AI","reg":3.3,"min":null,"max":null,"vals":{"Camisa":1.8,"Danilo":3.2,"Dudu":4.1,"Paciraro":2,"Schmidt":3.8}},{"stat":"EP · FOLD","reg":42,"min":null,"max":null,"vals":{"Camisa":36,"Danilo":45,"Dudu":43,"Paciraro":42,"Schmidt":29}},{"stat":"EP · CALL","reg":53,"min":null,"max":null,"vals":{"Camisa":57,"Danilo":52,"Dudu":50,"Paciraro":54,"Schmidt":65}},{"stat":"EP · 3B NAI","reg":3,"min":null,"max":null,"vals":{"Camisa":6.4,"Danilo":2,"Dudu":3.8,"Paciraro":3.2,"Schmidt":1}},{"stat":"EP · 3B AI","reg":3,"min":null,"max":null,"vals":{"Camisa":0.4,"Danilo":1.4,"Dudu":3.5,"Paciraro":1.6,"Schmidt":5.1}}]},{"name":"BIG BLIND — > 50 bb","stats":[{"stat":"TOTAL · FOLD","reg":33,"min":null,"max":null,"vals":{"Camisa":25,"Danilo":38,"Dudu":42,"Paciraro":42,"Schmidt":25}},{"stat":"TOTAL · CALL","reg":58,"min":null,"max":null,"vals":{"Camisa":65,"Danilo":55,"Dudu":52,"Paciraro":53,"Schmidt":68}},{"stat":"TOTAL · 3B NAI","reg":9.6,"min":null,"max":null,"vals":{"Camisa":9.9,"Danilo":6.5,"Dudu":6.2,"Paciraro":5.1,"Schmidt":6.7}},{"stat":"TOTAL · 3B AI","reg":0.1,"min":null,"max":null,"vals":{"Camisa":0.1,"Danilo":0,"Dudu":0,"Paciraro":0,"Schmidt":0.5}},{"stat":"BTN · FOLD","reg":25,"min":null,"max":null,"vals":{"Camisa":16,"Danilo":27,"Dudu":35,"Paciraro":37,"Schmidt":22}},{"stat":"BTN · CALL","reg":59,"min":null,"max":null,"vals":{"Camisa":70,"Danilo":61,"Dudu":59,"Paciraro":55,"Schmidt":69}},{"stat":"BTN · 3B NAI","reg":15,"min":null,"max":null,"vals":{"Camisa":14,"Danilo":12,"Dudu":6.4,"Paciraro":7.9,"Schmidt":9.4}},{"stat":"BTN · 3B AI","reg":0.1,"min":null,"max":null,"vals":{"Camisa":0,"Danilo":0,"Dudu":0,"Paciraro":0,"Schmidt":0.2}},{"stat":"CO · FOLD","reg":29,"min":null,"max":null,"vals":{"Camisa":20,"Danilo":43,"Dudu":40,"Paciraro":44,"Schmidt":21}},{"stat":"CO · CALL","reg":59,"min":null,"max":null,"vals":{"Camisa":68,"Danilo":52,"Dudu":52,"Paciraro":50,"Schmidt":73}},{"stat":"CO · 3B NAI","reg":11,"min":null,"max":null,"vals":{"Camisa":12,"Danilo":5.4,"Dudu":7.9,"Paciraro":6.3,"Schmidt":6.2}},{"stat":"CO · 3B AI","reg":0.1,"min":null,"max":null,"vals":{"Camisa":0,"Danilo":0,"Dudu":0,"Paciraro":0,"Schmidt":0.3}},{"stat":"MP · FOLD","reg":37,"min":null,"max":null,"vals":{"Camisa":29,"Danilo":41,"Dudu":44,"Paciraro":44,"Schmidt":28}},{"stat":"MP · CALL","reg":57,"min":null,"max":null,"vals":{"Camisa":65,"Danilo":54,"Dudu":52,"Paciraro":54,"Schmidt":67}},{"stat":"MP · 3B NAI","reg":5.6,"min":null,"max":null,"vals":{"Camisa":5.7,"Danilo":4.4,"Dudu":4,"Paciraro":1.6,"Schmidt":5}},{"stat":"MP · 3B AI","reg":0.1,"min":null,"max":null,"vals":{"Camisa":0.2,"Danilo":0,"Dudu":0,"Paciraro":0,"Schmidt":0.3}},{"stat":"EP · FOLD","reg":41,"min":null,"max":null,"vals":{"Camisa":27,"Danilo":48,"Dudu":46,"Paciraro":48,"Schmidt":33}},{"stat":"EP · CALL","reg":55,"min":null,"max":null,"vals":{"Camisa":71,"Danilo":45,"Dudu":50,"Paciraro":50,"Schmidt":63}},{"stat":"EP · 3B NAI","reg":4.1,"min":null,"max":null,"vals":{"Camisa":1.7,"Danilo":7.2,"Dudu":4.3,"Paciraro":1.7,"Schmidt":3.6}},{"stat":"EP · 3B AI","reg":0.1,"min":null,"max":null,"vals":{"Camisa":0,"Danilo":0,"Dudu":0,"Paciraro":0,"Schmidt":0.6}}]}]},{"name":"Blind War","groups":[{"name":"ALL STACKS — SB vs BB","stats":[{"stat":"RFI","reg":35,"min":28,"max":40,"vals":{"Camisa":33,"Danilo":24,"Dudu":23,"Paciraro":24,"Schmidt":38}},{"stat":"SHOVE","reg":16,"min":15,"max":28,"vals":{"Camisa":21,"Danilo":21,"Dudu":21,"Paciraro":15,"Schmidt":17}},{"stat":"LIMP/CALL","reg":39,"min":35,"max":48,"vals":{"Camisa":48,"Danilo":43,"Dudu":46,"Paciraro":43,"Schmidt":56}},{"stat":"LIMP/FOLD","reg":49,"min":40,"max":55,"vals":{"Camisa":43,"Danilo":51,"Dudu":49,"Paciraro":45,"Schmidt":37}},{"stat":"LIMP/RAISE","reg":15,"min":8,"max":20,"vals":{"Camisa":12,"Danilo":7.6,"Dudu":5.8,"Paciraro":14,"Schmidt":8.6}}]},{"name":"ALL STACKS — BB vs SB","stats":[{"stat":"CALL","reg":51,"min":45,"max":55,"vals":{"Camisa":45,"Danilo":49,"Dudu":41,"Paciraro":45,"Schmidt":59}},{"stat":"FOLD","reg":29,"min":25,"max":35,"vals":{"Camisa":32,"Danilo":37,"Dudu":44,"Paciraro":36,"Schmidt":23}},{"stat":"3B NAI","reg":12,"min":8,"max":15,"vals":{"Camisa":17,"Danilo":6.7,"Dudu":9.6,"Paciraro":9.6,"Schmidt":8.9}},{"stat":"3B AI","reg":8.3,"min":6,"max":12,"vals":{"Camisa":5.8,"Danilo":7.9,"Dudu":5.6,"Paciraro":10,"Schmidt":9.7}},{"stat":"R VS L","reg":49,"min":42,"max":54,"vals":{"Camisa":44,"Danilo":40,"Dudu":38,"Paciraro":42,"Schmidt":35}},{"stat":"X VS L","reg":51,"min":46,"max":58,"vals":{"Camisa":56,"Danilo":60,"Dudu":62,"Paciraro":58,"Schmidt":65}}]},{"name":"0 - 20 BBs — SB vs BB","stats":[{"stat":"RFI","reg":14,"min":10,"max":16,"vals":{"Camisa":17,"Danilo":13,"Dudu":9.1,"Paciraro":8.2,"Schmidt":17}},{"stat":"SHOVE","reg":44,"min":44,"max":60,"vals":{"Camisa":46,"Danilo":44,"Dudu":52,"Paciraro":43,"Schmidt":49}},{"stat":"LIMP/CALL","reg":24,"min":16,"max":32,"vals":{"Camisa":31,"Danilo":18,"Dudu":7.8,"Paciraro":34,"Schmidt":28}},{"stat":"LIMP/FOLD","reg":69,"min":58,"max":80,"vals":{"Camisa":63,"Danilo":78,"Dudu":88,"Paciraro":56,"Schmidt":62}},{"stat":"LIMP/RAISE","reg":14,"min":10,"max":24,"vals":{"Camisa":19,"Danilo":11,"Dudu":7.7,"Paciraro":20,"Schmidt":27}}]},{"name":"0 - 20 BBs — BB vs SB","stats":[{"stat":"CALL","reg":40,"min":32,"max":44,"vals":{"Camisa":35,"Danilo":35,"Dudu":32,"Paciraro":39,"Schmidt":40}},{"stat":"FOLD","reg":33,"min":28,"max":42,"vals":{"Camisa":42,"Danilo":44,"Dudu":47,"Paciraro":32,"Schmidt":24}},{"stat":"3B NAI","reg":2.8,"min":0.7,"max":3.1,"vals":{"Camisa":7.2,"Danilo":1.2,"Dudu":0.7,"Paciraro":0.8,"Schmidt":3.1}},{"stat":"3B AI","reg":26,"min":22,"max":32,"vals":{"Camisa":17,"Danilo":22,"Dudu":19,"Paciraro":29,"Schmidt":32}},{"stat":"R VS L","reg":48,"min":40,"max":54,"vals":{"Camisa":44,"Danilo":38,"Dudu":48,"Paciraro":33,"Schmidt":42}},{"stat":"X VS L","reg":52,"min":46,"max":60,"vals":{"Camisa":56,"Danilo":62,"Dudu":52,"Paciraro":67,"Schmidt":58}}]},{"name":"20 - 50 BBs — SB vs BB","stats":[{"stat":"RFI","reg":43,"min":38,"max":50,"vals":{"Camisa":46,"Danilo":31,"Dudu":29,"Paciraro":33,"Schmidt":43}},{"stat":"SHOVE","reg":3,"min":1,"max":4.5,"vals":{"Camisa":3,"Danilo":1.8,"Dudu":4.4,"Paciraro":0.8,"Schmidt":4.3}},{"stat":"LIMP/CALL","reg":41,"min":36,"max":48,"vals":{"Camisa":49,"Danilo":49,"Dudu":50,"Paciraro":42,"Schmidt":61}},{"stat":"LIMP/FOLD","reg":44,"min":36,"max":48,"vals":{"Camisa":41,"Danilo":40,"Dudu":43,"Paciraro":43,"Schmidt":36}},{"stat":"LIMP/RAISE","reg":18,"min":12,"max":24,"vals":{"Camisa":12,"Danilo":11,"Dudu":7.6,"Paciraro":17,"Schmidt":8.8}}]},{"name":"20 - 50 BBs — BB vs SB","stats":[{"stat":"CALL","reg":52,"min":46,"max":58,"vals":{"Camisa":47,"Danilo":47,"Dudu":43,"Paciraro":44,"Schmidt":56}},{"stat":"FOLD","reg":29,"min":24,"max":32,"vals":{"Camisa":31,"Danilo":38,"Dudu":43,"Paciraro":35,"Schmidt":23}},{"stat":"3B NAI","reg":12,"min":9,"max":13,"vals":{"Camisa":18,"Danilo":9,"Dudu":10,"Paciraro":10,"Schmidt":9.5}},{"stat":"3B AI","reg":7.7,"min":7,"max":13,"vals":{"Camisa":4.5,"Danilo":6.5,"Dudu":4.3,"Paciraro":10,"Schmidt":11}},{"stat":"R VS L","reg":47,"min":40,"max":56,"vals":{"Camisa":42,"Danilo":39,"Dudu":37,"Paciraro":44,"Schmidt":34}},{"stat":"X VS L","reg":53,"min":44,"max":60,"vals":{"Camisa":58,"Danilo":61,"Dudu":63,"Paciraro":56,"Schmidt":66}}]},{"name":"50 BBs + — SB vs BB","stats":[{"stat":"RFI","reg":48,"min":42,"max":56,"vals":{"Camisa":41,"Danilo":34,"Dudu":34,"Paciraro":31,"Schmidt":53}},{"stat":"SHOVE","reg":0.1,"min":0,"max":0.1,"vals":{"Camisa":0,"Danilo":0,"Dudu":0,"Paciraro":0,"Schmidt":0}},{"stat":"LIMP/CALL","reg":48,"min":42,"max":56,"vals":{"Camisa":56,"Danilo":55,"Dudu":60,"Paciraro":54,"Schmidt":62}},{"stat":"LIMP/FOLD","reg":42,"min":36,"max":48,"vals":{"Camisa":34,"Danilo":43,"Dudu":38,"Paciraro":41,"Schmidt":33}},{"stat":"LIMP/RAISE","reg":9.8,"min":6,"max":15,"vals":{"Camisa":10,"Danilo":1.7,"Dudu":2.3,"Paciraro":5.1,"Schmidt":5}}]},{"name":"50 BBs + — BB vs SB","stats":[{"stat":"CALL","reg":57,"min":50,"max":64,"vals":{"Camisa":50,"Danilo":62,"Dudu":42,"Paciraro":49,"Schmidt":67}},{"stat":"FOLD","reg":27,"min":24,"max":32,"vals":{"Camisa":29,"Danilo":32,"Dudu":45,"Paciraro":39,"Schmidt":21}},{"stat":"3B NAI","reg":16,"min":14,"max":20,"vals":{"Camisa":22,"Danilo":6.2,"Dudu":13,"Paciraro":13,"Schmidt":9.9}},{"stat":"3B AI","reg":0.3,"min":0,"max":0.5,"vals":{"Camisa":0,"Danilo":0,"Dudu":0,"Paciraro":0,"Schmidt":2.1}},{"stat":"R VS L","reg":54,"min":48,"max":62,"vals":{"Camisa":49,"Danilo":44,"Dudu":32,"Paciraro":47,"Schmidt":30}},{"stat":"X VS L","reg":46,"min":38,"max":52,"vals":{"Camisa":51,"Danilo":56,"Dudu":68,"Paciraro":53,"Schmidt":70}}]}]},{"name":"IP Agressor","groups":[{"name":"FLOP","stats":[{"stat":"B (bet flop)","reg":86,"min":75,"max":90,"vals":{"Camisa":79,"Danilo":80,"Dudu":85,"Paciraro":77,"Schmidt":53}},{"stat":"X (check flop)","reg":14,"min":10,"max":25,"vals":{"Camisa":21,"Danilo":20,"Dudu":15,"Paciraro":23,"Schmidt":47}},{"stat":"BsF","reg":41,"min":33,"max":49,"vals":{"Camisa":29,"Danilo":32,"Dudu":48,"Paciraro":47,"Schmidt":28}},{"stat":"BbF","reg":40,"min":32,"max":48,"vals":{"Camisa":21,"Danilo":18,"Dudu":21,"Paciraro":37,"Schmidt":30}}]},{"name":"TURN","stats":[{"stat":"B | B","reg":57,"min":48,"max":64,"vals":{"Camisa":55,"Danilo":54,"Dudu":35,"Paciraro":45,"Schmidt":66}},{"stat":"B | X","reg":43,"min":36,"max":52,"vals":{"Camisa":45,"Danilo":46,"Dudu":65,"Paciraro":55,"Schmidt":34}},{"stat":"X | B","reg":56,"min":47,"max":64,"vals":{"Camisa":57,"Danilo":55,"Dudu":42,"Paciraro":63,"Schmidt":55}},{"stat":"X | X","reg":44,"min":36,"max":52,"vals":{"Camisa":43,"Danilo":45,"Dudu":58,"Paciraro":37,"Schmidt":45}},{"stat":"X | Fs","reg":34,"min":27,"max":42,"vals":{"Camisa":23,"Danilo":45,"Dudu":45,"Paciraro":36,"Schmidt":29}},{"stat":"X | Fb","reg":49,"min":40,"max":57,"vals":{"Camisa":29,"Danilo":50,"Dudu":58,"Paciraro":48,"Schmidt":43}}]},{"name":"RIVER","stats":[{"stat":"B | B | B","reg":51,"min":42,"max":60,"vals":{"Camisa":46,"Danilo":44,"Dudu":43,"Paciraro":41,"Schmidt":42}},{"stat":"B | B | X","reg":49,"min":40,"max":58,"vals":{"Camisa":54,"Danilo":56,"Dudu":57,"Paciraro":59,"Schmidt":58}},{"stat":"B | X | B","reg":40,"min":32,"max":49,"vals":{"Camisa":33,"Danilo":29,"Dudu":31,"Paciraro":27,"Schmidt":40}},{"stat":"B | X | X","reg":60,"min":50,"max":68,"vals":{"Camisa":67,"Danilo":71,"Dudu":69,"Paciraro":73,"Schmidt":60}},{"stat":"B | X | Fb","reg":65,"min":55,"max":74,"vals":{"Camisa":67,"Danilo":77,"Dudu":79,"Paciraro":66,"Schmidt":52}},{"stat":"B | X | Fs","reg":49,"min":40,"max":58,"vals":{"Camisa":47,"Danilo":65,"Dudu":59,"Paciraro":46,"Schmidt":42}},{"stat":"B | X | R","reg":9.3,"min":5,"max":15,"vals":{"Camisa":9.2,"Danilo":7.5,"Dudu":6.6,"Paciraro":7.9,"Schmidt":13}}]}]},{"name":"OOP Agressor","groups":[{"name":"FLOP","stats":[{"stat":"B (bet flop)","reg":72,"min":45,"max":70,"vals":{"Camisa":74,"Danilo":74,"Dudu":78,"Paciraro":79,"Schmidt":41},"obs":"range no print: 45-70"},{"stat":"X (check flop)","reg":28,"min":30,"max":55,"vals":{"Camisa":26,"Danilo":26,"Dudu":22,"Paciraro":21,"Schmidt":59},"obs":"range: 30-55"},{"stat":"XFs","reg":33,"min":24,"max":35,"vals":{"Camisa":16,"Danilo":18,"Dudu":33,"Paciraro":27,"Schmidt":36},"obs":"range: 24-30"},{"stat":"XRs","reg":11,"min":10,"max":16,"vals":{"Camisa":8,"Danilo":0,"Dudu":4.8,"Paciraro":0,"Schmidt":13},"obs":"range: 10-16"}]},{"name":"TURN","stats":[{"stat":"B | B","reg":52,"min":44,"max":56,"vals":{"Camisa":48,"Danilo":56,"Dudu":22,"Paciraro":45,"Schmidt":58},"obs":"range: 40-47"},{"stat":"X | B","reg":55,"min":45,"max":65,"vals":{"Camisa":35,"Danilo":57,"Dudu":32,"Paciraro":48,"Schmidt":41},"obs":"range: 45-60 (verde/no alvo)"},{"stat":"Bs | XFs","reg":48,"min":null,"max":null,"vals":{"Camisa":43,"Danilo":57,"Dudu":56,"Paciraro":50,"Schmidt":50},"obs":"range: 28-36"},{"stat":"Bs | XF","reg":55,"min":45,"max":60,"vals":{"Camisa":62,"Danilo":52,"Dudu":60,"Paciraro":40,"Schmidt":43},"obs":"range: 40-52"}]},{"name":"RIVER","stats":[{"stat":"Bs | B | B","reg":51,"min":48,"max":60,"vals":{"Camisa":52,"Danilo":25,"Dudu":71,"Paciraro":27,"Schmidt":31},"obs":"range: 55-65"}]}]},{"name":"IP Passivo","groups":[{"name":"FLOP","stats":[{"stat":"Fs","reg":29,"min":22,"max":32,"vals":{"Camisa":23,"Danilo":32,"Dudu":37,"Paciraro":29,"Schmidt":37},"obs":"range: 15-22"},{"stat":"Rs","reg":14,"min":10,"max":20,"vals":{"Camisa":11,"Danilo":0,"Dudu":6.1,"Paciraro":17,"Schmidt":12},"obs":"range: 15-25"},{"stat":"B","reg":48,"min":43,"max":55,"vals":{"Camisa":34,"Danilo":16,"Dudu":32,"Paciraro":13,"Schmidt":32},"obs":"range: 43-55 (verde/no alvo)"},{"stat":"X","reg":52,"min":45,"max":57,"vals":{"Camisa":66,"Danilo":84,"Dudu":68,"Paciraro":87,"Schmidt":68},"obs":"range: 45-57 (verde/no alvo)"}]},{"name":"TURN","stats":[{"stat":"Cs | Fb","reg":43,"min":25,"max":45,"vals":{"Camisa":47,"Danilo":38,"Dudu":56,"Paciraro":40,"Schmidt":30},"obs":"range: 30-40"},{"stat":"Cs | Fov","reg":61,"min":50,"max":65,"vals":{"Camisa":99,"Danilo":null,"Dudu":50,"Paciraro":50,"Schmidt":0},"obs":"range: 50-60"},{"stat":"Cs | B","reg":53,"min":40,"max":55,"vals":{"Camisa":58,"Danilo":41,"Dudu":37,"Paciraro":28,"Schmidt":63},"obs":"range: 38-50"}]},{"name":"RIVER","stats":[{"stat":"Cs | C | F","reg":46,"min":38,"max":54,"vals":{"Camisa":59,"Danilo":11,"Dudu":40,"Paciraro":38,"Schmidt":25},"obs":"range: 30-40"}]}]},{"name":"OOP Passivo","groups":[{"name":"FLOP","stats":[{"stat":"XFs","reg":43,"min":40,"max":48,"vals":{"Camisa":41,"Danilo":50,"Dudu":51,"Paciraro":47,"Schmidt":45}},{"stat":"XFb","reg":60,"min":58,"max":65,"vals":{"Camisa":49,"Danilo":64,"Dudu":63,"Paciraro":66,"Schmidt":54}},{"stat":"XCs","reg":37,"min":30,"max":42,"vals":{"Camisa":32,"Danilo":40,"Dudu":33,"Paciraro":41,"Schmidt":40}},{"stat":"XRs","reg":20,"min":17,"max":25,"vals":{"Camisa":27,"Danilo":10,"Dudu":16,"Paciraro":12,"Schmidt":15}},{"stat":"D","reg":4.3,"min":3,"max":8,"vals":{"Camisa":2.9,"Danilo":2,"Dudu":2.7,"Paciraro":1.9,"Schmidt":4.8}}]},{"name":"TURN","stats":[{"stat":"XC | XF","reg":48,"min":42,"max":56,"vals":{"Camisa":44,"Danilo":49,"Dudu":56,"Paciraro":44,"Schmidt":36}},{"stat":"XC | XC","reg":42,"min":35,"max":50,"vals":{"Camisa":49,"Danilo":41,"Dudu":41,"Paciraro":48,"Schmidt":55}},{"stat":"XC | XR","reg":11,"min":5,"max":15,"vals":{"Camisa":8.3,"Danilo":11,"Dudu":3.1,"Paciraro":8.6,"Schmidt":9.7}},{"stat":"XC | D","reg":11,"min":8,"max":15,"vals":{"Camisa":5.6,"Danilo":3.5,"Dudu":10,"Paciraro":8.3,"Schmidt":15}},{"stat":"X | XF","reg":61,"min":55,"max":68,"vals":{"Camisa":60,"Danilo":68,"Dudu":70,"Paciraro":57,"Schmidt":47}},{"stat":"X | B","reg":48,"min":40,"max":52,"vals":{"Camisa":51,"Danilo":33,"Dudu":38,"Paciraro":29,"Schmidt":44}}]},{"name":"RIVER","stats":[{"stat":"XC | X | B","reg":56,"min":46,"max":65,"vals":{"Camisa":52,"Danilo":34,"Dudu":51,"Paciraro":43,"Schmidt":58}},{"stat":"XCs | X | Bs","reg":18,"min":15,"max":30,"vals":{"Camisa":13,"Danilo":8.5,"Dudu":19,"Paciraro":13,"Schmidt":21}},{"stat":"XCs | X | X","reg":44,"min":35,"max":50,"vals":{"Camisa":48,"Danilo":66,"Dudu":49,"Paciraro":57,"Schmidt":42}},{"stat":"XC | XC | XC","reg":42,"min":32,"max":45,"vals":{"Camisa":25,"Danilo":38,"Dudu":22,"Paciraro":24,"Schmidt":42}},{"stat":"XC | XC | XF","reg":54,"min":45,"max":65,"vals":{"Camisa":72,"Danilo":60,"Dudu":73,"Paciraro":75,"Schmidt":52}}]}]}]};</script>
 </body>
 </html>
