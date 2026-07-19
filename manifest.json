@@ -1,0 +1,34 @@
+{
+ "players": [
+  {
+   "name": "Camisa",
+   "kind": "player",
+   "file": "Planilhas/Guerreiros_Camisa.xlsx"
+  },
+  {
+   "name": "Danilo",
+   "kind": "player",
+   "file": "Planilhas/Guerreiros_Danilo.xlsx"
+  },
+  {
+   "name": "Dudu",
+   "kind": "player",
+   "file": "Planilhas/Guerreiros_Dudu.xlsx"
+  },
+  {
+   "name": "Paciraro",
+   "kind": "player",
+   "file": "Planilhas/Guerreiros_Paciraro.xlsx"
+  },
+  {
+   "name": "Schmidt",
+   "kind": "player",
+   "file": "Planilhas/Guerreiros_Schmidt.xlsx"
+  },
+  {
+   "name": "Reg Aggro",
+   "kind": "benchmark",
+   "file": "Planilhas/Guerreiros_RegAggro.xlsx"
+  }
+ ]
+}
